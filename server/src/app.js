@@ -5,11 +5,11 @@ import routes from "./routes/index.js";
 
 const app = express();
 
-//middleware
+// Middleware
 app.use(cors());
 app.use(express.json());
-//API VERSION
 
+// API Routes
 app.use("/api/v1", routes);
 
 export default app;

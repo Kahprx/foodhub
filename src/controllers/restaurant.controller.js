@@ -29,12 +29,26 @@ export const createRestaurant = async (req, res)=> {
 };
 export const getAllRestaurants = async (req, res) => {
   try {
-    const restaurants = await getAllRestaurantsService();
+    const { keyword, sort } = req.query;
+
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+
+    const result = await getAllRestaurantsService(
+      keyword,
+      page,
+      limit,
+      sort
+    );
 
     return res.status(200).json({
       success: true,
-      count: restaurants.length,
-      data: restaurants,
+      page,
+      limit,
+      total: result.total,
+      totalPages: Math.ceil(result.total / limit),
+      count: result.restaurants.length,
+      data: result.restaurants,
     });
   } catch (error) {
     return res.status(500).json({

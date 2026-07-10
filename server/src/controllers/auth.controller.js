@@ -5,7 +5,7 @@ export const register = async (req, res)=> {
         const result = await registerService (req.body);
         
         return res.status(201).json({
-            sucess : true,
+            success : true,
             message :"Register successfully",
             data: result,
 

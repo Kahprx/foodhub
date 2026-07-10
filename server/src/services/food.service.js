@@ -60,7 +60,6 @@ export const updateFoodService = async (id, foodData) => {
       runValidators: true,
     }
   );
-  return food;
 };
 export const deleteFoodService = async(id) =>{
   const food = await Food.findByIdAndDelete(id);

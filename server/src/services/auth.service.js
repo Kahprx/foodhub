@@ -41,7 +41,7 @@ export const loginService = async(userData)=>{
     const user = await User.findOne({email});
      
     if(!user) {
-        throw new Error("Email đã tồn tai");
+        throw new Error("Email không tồn tại");
     }
     const isMatch = await bcrypt.compare(password, user.password);
 

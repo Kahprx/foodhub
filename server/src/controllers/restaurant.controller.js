@@ -65,7 +65,7 @@ export const getRestaurantById = async (req , res)=>{
 
     if (!restaurant) {
       return res.status(404).json({
-        success:true,
+        success:false,
         message:"nhà hàng không tìm thấy",
       });
     }

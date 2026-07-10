@@ -1,7 +1,6 @@
 import { createOrderService, getMyOrdersService, getOrderByIdService, updateOrderStatusService,
     cancelOrderService,getRevenueService,getAllOrdersService
  } from "../services/order.service.js";
-import { successResponse } from "../utils/response.js";
 
 export const createOrder = async (req,res) =>{
     try {

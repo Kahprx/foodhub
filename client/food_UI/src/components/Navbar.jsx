@@ -1,27 +1,57 @@
-import {FaHamburger , FaShoppingCart , FaUser} from "react-icons/fa";
+import { useEffect, useState } from "react";
+import NavbarSearch from "./Navbar/NavbarSearch";
+import NavbarLogo from "./Navbar/NavbarLogo";
+import NavbarMenu from "./Navbar/NavbarMenu";
+import NavbarActions from "./Navbar/NavbarActions";
+import MobileDrawer from "./Navbar/MobileDrawer";
+function Navbar() {
+  const [open, setOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
 
-function Navbar(){
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-8 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <FaHamburger className="text-orange-500 text-2xl"/>
-          <h1 className="text-orange-500 text-2xl">
-            FoodHub
-          </h1>
-        </div>
-      <div className="flex gap-8 font-medium">
-        <a href="/">Home</a>
-        <a href="/">Restaurant</a>
-        <a href="/">Orders</a>
+    <nav
+      className="group fixed top-0 left-0 w-full z-50 rounded-b-3xl overflow-hidden transition-all duration-300"
+    >
+      {/* Banner GIF */}
+      <div className="absolute inset-0 overflow-hidden">
+        <img
+          src="/banner/f1c3fc727775a7378b32c4596e2e0ca2.gif"
+          alt=""
+          className="w-full h-full object-cover scale-110 blur-sm"
+        />
+        <div className="absolute inset-0 bg-white group-hover:bg-white/55 transition-all duration-500" />
       </div>
-      <div className="flex items-center gap-5">
-        <FaShoppingCart className="text-xl cursor-pointer" />
-        <FaUser className="text-xl cursor-pointer" />
+
+      <div className={`relative container mx-auto h-16 px-6 flex justify-between items-center transition-all duration-300 ${
+        isScrolled ? "shadow-xl" : "shadow-sm"
+      }`}>
+
+        <NavbarLogo />
+        
+        <NavbarSearch />
+
+        <NavbarMenu />
+
+        <NavbarActions onOpen={() => setOpen(true)} />
+
       </div>
-      </div>
+
+      <MobileDrawer open={open} onClose={() => setOpen(false)} />
+
     </nav>
   );
 }
+
 export default Navbar;

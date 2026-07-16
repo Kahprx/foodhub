@@ -17,6 +17,14 @@ export const getAllFoodsService = async (query) => {
       $options: "i",
     };
   }
+  if (query.category) {
+  filter.category = query.category;
+}
+
+// Filter theo restaurant
+if (query.restaurant) {
+  filter.restaurant = query.restaurant;
+}
 let sort = {};
 
 if (query.sort === "price") {
@@ -33,9 +41,10 @@ if (query.sort === "price") {
   const total = await Food.countDocuments(filter);
 
   const foods = await Food.find(filter)
-    .populate("restaurant", "name address phone")
-    .skip(skip)
-    .limit(limit);
+  .populate("restaurant", "name address phone")
+  .sort(sort)
+  .skip(skip)
+  .limit(limit);  
 
   return {
     foods,

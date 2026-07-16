@@ -31,12 +31,10 @@ function Navbar() {
           alt=""
           className="w-full h-full object-cover scale-110 blur-sm"
         />
-        <div className="absolute inset-0 bg-white group-hover:bg-white/55 transition-all duration-500" />
+        <div className="absolute inset-0 bg-white/70 group-hover:bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-lg transition-all duration-500" />
       </div>
 
-      <div className={`relative container mx-auto h-16 px-6 flex justify-between items-center transition-all duration-300 ${
-        isScrolled ? "shadow-xl" : "shadow-sm"
-      }`}>
+      <div className="relative container mx-auto h-16 px-6 flex justify-between items-center">
 
         <NavbarLogo />
         

@@ -4,7 +4,7 @@ import { useCart } from "../context/CartContext";
 import { FaTrashAlt } from "react-icons/fa";
 
 function Cart() {
-  const {
+  const { 
     cartItems,
     increaseQuantity,
     decreaseQuantity,
@@ -87,25 +87,31 @@ function Cart() {
 
         <div className="lg:col-span-2 space-y-6">
 
-          <AnimatePresence>
+          <AnimatePresence mode = "popLayout">
           {cartItems.map((item) => (
 
             <motion.div
               key={item._id}
               layout
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, x: 100 }}
-              transition={{ duration: 0.3 }}
-              className="
-                bg-white
-                rounded-3xl
-                shadow-lg
-                p-6
-                flex
-                gap-6
-                items-center
-              "
+              initial ={{
+                opacity : 0,
+                y:40,
+                scale :0.95,
+              }}
+              animate ={{
+                opacity : 1,
+                y : 0,
+                scale :1,
+              }}
+              exit={{
+                opacity : 0,
+                x : 120,
+                scale : 0.8,
+              }}
+              transition={{
+                duration :  0.35,
+              }}
+              className="bg-white rounded-3xl shadow-2xl transition-all duration-300 p-6"
             >
 
               <img

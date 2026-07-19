@@ -1,7 +1,12 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
-import { FaTrashAlt } from "react-icons/fa";
+import {
+  FaTrashAlt,
+  FaMoneyBillWave,
+  FaTruck,
+  FaReceipt,
+} from "react-icons/fa";
 
 function Cart() {
   const { 
@@ -31,8 +36,18 @@ function Cart() {
         <div className="text-center">
           <motion.div
             initial={{ scale: 0.8 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.4 }}
+            animate={{
+              scale: 1,
+              y: [0, -8, 0],
+            }}
+            transition={{
+              delay: 0.2,
+              duration: 0.4,
+              y: {
+                repeat: Infinity,
+                duration: 2,
+              },
+            }}
             className="text-8xl mb-8"
           >
             🛒
@@ -55,33 +70,40 @@ function Cart() {
   }
 
   return (
-    <section className="container mx-auto px-6 py-32">
+    <section className="container mx-auto px-4 sm:px-6 py-24 lg:py-32">
 
-      <div className="flex justify-between items-center mb-10">
+      <div className="flex flex-col sm:flex-row gap-5 justify-between items-center mb-10">
 
-        <h1 className="text-5xl font-bold">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold">
           Giỏ hàng
         </h1>
 
         <button
           onClick={clearCart}
           className="
+            w-full
+            sm:w-auto
             px-5
             py-3
             rounded-xl
-            bg-red-500
-            hover:bg-red-600
-            text-white
+            bg-red-50
+            text-red-500
+            border
+            border-red-100
+            hover:bg-red-500
+            hover:text-white
             font-semibold
-            transition
+            transition-all
+            duration-300
+            hover:rotate-1
           "
         >
-          Xóa tất cả
+          🗑 Xóa tất cả
         </button>
 
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-10 ">
 
         {/* Left */}
 
@@ -111,34 +133,55 @@ function Cart() {
               transition={{
                 duration :  0.35,
               }}
-              className="bg-white rounded-3xl shadow-2xl transition-all duration-300 p-6"
+              whileHover={{
+                scale: 1.01,
+              }}
+              className="bg-white/90 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col sm:flex-row gap-6 items-center"
             >
 
-              <img
+              <motion.img
                 src={
                   item.image ||
                   "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800"
                 }
                 alt={item.name}
+                whileHover={{
+                  scale: 1.08,
+                }}
+                transition={{
+                  duration: 0.3,
+                }}
                 className="
-                  w-28
-                  h-28
+                  w-full
+                  sm:w-36
+                  h-52
+                  sm:h-36
                   rounded-2xl
                   object-cover
                 "
               />
 
-              <div className="flex-1 min-w-0">
+              <div className="flex-1
+    min-w-0
+    w-full
+    text-center
+    sm
+    ">
 
                 <h2 className="text-xl font-bold truncate">
                   {item.name}
                 </h2>
 
-                <p className="text-orange-500 text-lg mt-1">
+                <p className="text-orange-500 font-bold text-xl mt-2">
                   {item.price.toLocaleString()}đ
                 </p>
 
-                <div className="flex items-center gap-3 mt-4">
+                <div className=" flex
+    justify-center
+    sm:justify-start
+    items-center
+    gap-3
+    mt-4">
 
                   <button
                     onClick={() =>
@@ -157,9 +200,12 @@ function Cart() {
                     -
                   </button>
 
-                  <span className="font-bold text-lg w-6 text-center">
+                  <motion.span
+                    layout
+                    className="w-9 h-9 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center"
+                  >
                     {item.quantity}
-                  </span>
+                  </motion.span>
 
                   <button
                     onClick={() =>
@@ -190,18 +236,24 @@ function Cart() {
                   }
                 }}
                 className="
-                  flex
-                  items-center
-                  gap-2
-                  px-5
-                  py-3
-                  rounded-xl
-                  bg-red-500
-                  hover:bg-red-600
-                  text-white
-                  transition-all
-                  duration-300
-                  hover:scale-105
+                  w-full
+  sm:w-auto
+  flex
+  justify-center
+  items-center
+  gap-2
+  px-5
+  py-3
+  rounded-xl
+  bg-red-50
+  text-red-500
+  border
+  border-red-100
+  hover:bg-red-500
+  hover:text-white
+  transition-all
+  duration-300
+  hover:scale-105
                 "
               >
                 <FaTrashAlt />
@@ -219,9 +271,11 @@ function Cart() {
 
         <div
           className="
-            bg-white
+            bg-gradient-to-br
+            from-orange-50
+            to-white
             rounded-3xl
-            shadow-xl
+            shadow-2xl
             p-8
             h-fit
             sticky
@@ -229,7 +283,7 @@ function Cart() {
           "
         >
 
-          <h2 className="text-3xl font-bold mb-8">
+          <h2 className="text-2xl lg:text-3xl font-bold mb-8">
             Tóm tắt đơn hàng
           </h2>
 
@@ -237,9 +291,10 @@ function Cart() {
 
             <div className="flex justify-between">
 
-              <span className="text-gray-500">
-                Tạm tính
-              </span>
+              <div className="flex gap-2 text-gray-500">
+                <FaMoneyBillWave className="mt-0.5" />
+                <span>Tạm tính</span>
+              </div>
 
               <span className="font-semibold">
                 {subtotal.toLocaleString()}đ
@@ -249,9 +304,10 @@ function Cart() {
 
             <div className="flex justify-between">
 
-              <span className="text-gray-500">
-                Phí giao hàng
-              </span>
+              <div className="flex gap-2 text-gray-500">
+                <FaTruck className="mt-0.5" />
+                <span>Phí giao hàng</span>
+              </div>
 
               <span className="font-semibold">
                 {shippingFee.toLocaleString()}đ
@@ -263,15 +319,19 @@ function Cart() {
 
             <div className="flex justify-between">
 
-              <span className="text-2xl font-bold">
-                Tổng
-              </span>
+              <div className="flex gap-2">
+                <FaReceipt className="mt-1.5" />
+                <span className="text-2xl font-bold">
+                  Tổng
+                </span>
+              </div>
 
               <span
                 className="
-                  text-3xl
-                  font-bold
+                  text-4xl
+                  font-black
                   text-orange-500
+                  tracking-tight
                 "
               >
                 {total.toLocaleString()}đ
@@ -281,25 +341,27 @@ function Cart() {
 
           </div>
 
-          <button
-            className="
-              mt-8
-              w-full
-              py-4
-              rounded-2xl
-              bg-orange-500
-              hover:bg-orange-600
-              text-white
-              font-bold
-              text-lg
-              transition-all
-              duration-300
-              hover:scale-105
-              active:scale-95
-            "
-          >
-            Thanh toán
-          </button>
+          <Link
+    to="/checkout"
+    className="
+        block
+        mt-8
+        w-full
+        py-4
+        rounded-2xl
+        bg-gradient-to-r
+        from-orange-500
+        to-red-500
+        text-white
+        text-center
+        font-bold
+        text-lg
+        hover:scale-105
+        transition
+    "
+>
+    Thanh toán
+</Link>
 
         </div>
       </div>

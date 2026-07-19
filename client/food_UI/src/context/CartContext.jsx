@@ -1,11 +1,27 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import {toast} from "react-toastify";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
-  const [cartItems, setCartItems] = useState([]);
+const [cartItems , setCartItems] = useState(() => {
+  try {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  } catch {
+    return [];
+  }
+});
+useEffect (() => {
+  localStorage.setItem(
+    "cart",
+    JSON.stringify(cartItems)
+  );
+} , [cartItems]);
 
   const addToCart = (food, quantity) => {
+    toast.success(`${food.name} đã được thêm vào giỏ!`);
+
     setCartItems((prev) => {
       const exist = prev.find((item) => item._id === food._id);
 
@@ -54,10 +70,14 @@ export function CartProvider({ children }) {
 
   const removeFromCart = (id) => {
     setCartItems((prev) => prev.filter((item) => item._id !== id));
+    toast.info("🗑 Đã xóa món ăn");
+    
   };
 
   const clearCart = () => {
     setCartItems([]);
+    localStorage.removeItem("cart");
+    toast.error("Đã xóa toàn bộ giỏ hàng");
   };
 
   return (

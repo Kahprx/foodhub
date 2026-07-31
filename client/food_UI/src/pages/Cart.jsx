@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
+import api from "../services/api";
 import {
   FaTrashAlt,
   FaMoneyBillWave,
   FaTruck,
   FaReceipt,
+  FaTag,
 } from "react-icons/fa";
 
 function Cart() {
@@ -17,13 +20,46 @@ function Cart() {
     clearCart,
   } = useCart();
 
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState(() => {
+    const saved = localStorage.getItem("foodhub-coupon");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [couponError, setCouponError] = useState("");
+  const [checkingCoupon, setCheckingCoupon] = useState(false);
+
+  const updateAppliedCoupon = (coupon) => {
+    setAppliedCoupon(coupon);
+    if (coupon) localStorage.setItem("foodhub-coupon", JSON.stringify(coupon));
+    else localStorage.removeItem("foodhub-coupon");
+  };
+
   const subtotal = cartItems.reduce(
     (total, item) => total + item.price * item.quantity,
     0
   );
   const shippingFee = subtotal > 0 ? 20000 : 0;
+  const discount = appliedCoupon?.discount || 0;
 
-  const total = subtotal + shippingFee;
+  const total = subtotal + shippingFee - discount;
+
+  const applyCoupon = async () => {
+    const code = couponCode.trim().toUpperCase();
+    if (!code) return;
+    setCheckingCoupon(true);
+    setCouponError("");
+    try {
+      const response = await api.get(`/orders/coupon/${code}`, {
+        params: { subtotal },
+      });
+      updateAppliedCoupon({ code, discount: response.data.data?.discount || 0 });
+    } catch (err) {
+      setCouponError(err.response?.data?.message || "Mã giảm giá không hợp lệ.");
+      updateAppliedCoupon(null);
+    } finally {
+      setCheckingCoupon(false);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -289,6 +325,43 @@ function Cart() {
 
           <div className="space-y-5">
 
+            {!appliedCoupon ? (
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-gray-600">
+                  Mã giảm giá
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    value={couponCode}
+                    onChange={(event) => setCouponCode(event.target.value)}
+                    placeholder="Nhập mã (VD: TOY10)"
+                    className="w-full rounded-xl border-2 border-gray-100 px-4 py-2.5 font-semibold outline-none transition focus:border-coral"
+                  />
+                  <button
+                    onClick={applyCoupon}
+                    disabled={checkingCoupon || !couponCode.trim()}
+                    className="shrink-0 rounded-xl bg-teal px-4 py-2.5 text-sm font-bold text-white transition hover:bg-teal/90 disabled:opacity-40"
+                  >
+                    {checkingCoupon ? "..." : "Áp dụng"}
+                  </button>
+                </div>
+                {couponError && <p className="mt-2 text-sm text-red-500">{couponError}</p>}
+              </div>
+            ) : (
+              <div className="flex items-center justify-between rounded-2xl bg-emerald-50 px-4 py-3">
+                <div className="flex items-center gap-2 text-emerald-700">
+                  <FaTag />
+                  <span className="font-bold">{appliedCoupon.code}</span>
+                </div>
+                <button
+                  onClick={() => { updateAppliedCoupon(null); setCouponCode(""); }}
+                  className="text-sm font-semibold text-red-500 hover:underline"
+                >
+                  Bỏ áp dụng
+                </button>
+              </div>
+            )}
+
             <div className="flex justify-between">
 
               <div className="flex gap-2 text-gray-500">
@@ -314,6 +387,18 @@ function Cart() {
               </span>
 
             </div>
+
+            {discount > 0 && (
+              <div className="flex justify-between text-emerald-600">
+                <div className="flex gap-2">
+                  <FaTag className="mt-0.5" />
+                  <span>Giảm giá</span>
+                </div>
+                <span className="font-semibold">
+                  -{discount.toLocaleString()}đ
+                </span>
+              </div>
+            )}
 
             <hr />
 

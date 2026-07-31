@@ -24,6 +24,14 @@ const reviewSchema = new mongoose.Schema(
       maxlength: 1000,
       default: "",
     },
+    images: {
+      type: [String],
+      default: [],
+    },
+    isApproved: {
+      type: Boolean,
+      default: true,
+    },
   },
   { timestamps: true }
 );

@@ -1,41 +1,71 @@
-import { NavLink } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import LineSidebar from "../bits/LineSidebar";
 
 const menu = [
   { to: "/admin/dashboard", label: "Dashboard" },
-  { to: "/admin/foods", label: "Toys" },
-  { to: "/admin/orders", label: "Orders" },
-  { to: "/admin/users", label: "Users" },
+  { to: "/admin/foods", label: "Sản phẩm" },
+  { to: "/admin/orders", label: "Đơn hàng" },
+  { to: "/admin/users", label: "Người dùng" },
+  { to: "/admin/reviews", label: "Đánh giá" },
+  { to: "/admin/coupons", label: "Mã giảm giá" },
+  { to: "/admin/banners", label: "Banner" },
+  { to: "/admin/categories", label: "Danh mục" },
+  { to: "/admin/brands", label: "Thương hiệu" },
+  { to: "/admin/reports", label: "Báo cáo" },
+  { to: "/admin/settings", label: "Cài đặt" },
 ];
 
 function AdminSidebar() {
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+
+  const activeIndex = menu.findIndex((item) => pathname.startsWith(item.to));
+
+  const handleItemClick = (index) => {
+    navigate(menu[index]?.to);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <aside className="min-h-screen w-64 bg-gradient-to-b from-slate-900 to-blue-950 p-6 text-white">
-      <h2 className="mb-10 text-2xl font-bold">🧸 HAPPYHOMES Admin</h2>
+      <h2 className="mb-6 text-2xl font-bold">🧸 HAPPYHOMES Admin</h2>
 
-      <nav className="space-y-2">
-        {menu.map((item) => (
-          <NavLink
-            key={item.to}
-            to={item.to}
-            className={({ isActive }) =>
-              `block rounded-xl px-4 py-3 transition ${
-                isActive
-                  ? "bg-gradient-to-r from-blue-500 to-purple-500 font-bold shadow-lg"
-                  : "hover:bg-white/10"
-              }`
-            }
-          >
-            {item.label}
-          </NavLink>
-        ))}
-      </nav>
+      <LineSidebar
+        items={menu.map((item) => item.label)}
+        onItemClick={handleItemClick}
+        defaultActive={activeIndex}
+        accentColor="#ffc94d"
+        textColor="#c4c4c4"
+        markerColor="#6c6c6c"
+        showIndex={false}
+        showMarker
+        proximityRadius={140}
+        maxShift={24}
+        falloff="smooth"
+        markerLength={48}
+        markerGap={0}
+        tickScale={0.5}
+        scaleTick
+        itemGap={16}
+        fontSize={1.05}
+        smoothing={120}
+      />
 
-      <NavLink
-        to="/"
-        className="mt-10 block rounded-xl px-4 py-3 text-gray-400 transition hover:bg-white/10"
-      >
-        ← Logout
-      </NavLink>
+      <div className="mt-10 space-y-2">
+        <button
+          type="button"
+          onClick={handleLogout}
+          className="block w-full rounded-xl px-4 py-3 text-left text-gray-400 transition hover:bg-red-500/20 hover:text-red-300"
+        >
+          🚪 Đăng xuất
+        </button>
+      </div>
     </aside>
   );
 }

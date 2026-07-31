@@ -1,8 +1,9 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 
 function Success() {
-  const orderId = Math.floor(Math.random() * 1000000);
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get("orderId") || Math.floor(Math.random() * 1000000);
 
   return (
     <section className="min-h-screen flex justify-center items-center px-6 pt-20">
@@ -51,27 +52,43 @@ function Success() {
           </p>
 
           <h2 className="text-3xl font-bold text-coral">
-            #{orderId}
+            #{String(orderId).slice(-6).toUpperCase()}
           </h2>
 
         </div>
 
-        <Link
-          to="/"
-          className="
-            inline-block
-            mt-10
-            px-8
-            py-4
-            rounded-2xl
-            bg-coral
-            hover:bg-coral/90
-            text-white
-            font-bold
-          "
-        >
-          Quay về Trang chủ
-        </Link>
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
+          <Link
+            to="/orders"
+            className="
+              inline-block
+              px-8
+              py-4
+              rounded-2xl
+              bg-teal
+              hover:bg-teal/90
+              text-white
+              font-bold
+            "
+          >
+            Xem đơn hàng
+          </Link>
+          <Link
+            to="/"
+            className="
+              inline-block
+              px-8
+              py-4
+              rounded-2xl
+              bg-coral
+              hover:bg-coral/90
+              text-white
+              font-bold
+            "
+          >
+            Quay về Trang chủ
+          </Link>
+        </div>
 
       </motion.div>
 

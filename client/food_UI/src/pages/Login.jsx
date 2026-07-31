@@ -56,9 +56,9 @@ function Login() {
 
       const response = await api.post("/auth/login", form);
 
-      const { token, user } = response.data.data;
+      const { token, user, refreshToken } = response.data.data;
 
-      login(user, token);
+      login(user, token, refreshToken);
 
       alert("🎉 Đăng nhập thành công!");
 
@@ -105,7 +105,17 @@ function Login() {
           </div>
 
           <div>
-            <label className="mb-2 block font-display font-bold">Mật khẩu</label>
+            <div className="mb-2 flex items-center justify-between">
+              <label className="block font-display font-bold">Mật khẩu</label>
+
+              <Link
+                to="/forgot-password"
+                className="text-sm font-bold text-teal underline decoration-2 underline-offset-4 hover:text-coral"
+              >
+                Quên mật khẩu?
+              </Link>
+            </div>
+
             <CurvedInput
               type="password"
               name="password"

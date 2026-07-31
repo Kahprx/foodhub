@@ -7,7 +7,7 @@ function NavbarSearch() {
       <input
         type="text"
         placeholder="Tìm đồ chơi..."
-        className="w-72 rounded-full border border-black/5 bg-white/80 py-2.5 pl-11 pr-4 font-semibold shadow-card outline-none transition placeholder:text-ink/40 focus:border-coral focus:bg-white focus:shadow-soft"
+        className="w-72 rounded-full border-2 border-ink/80 bg-white py-2.5 pl-11 pr-4 font-semibold shadow-chunky-sm outline-none transition placeholder:text-ink/40 focus:bg-white focus:shadow-chunky"
       />
     </div>
   );

@@ -44,6 +44,53 @@ const orderSchema = new mongoose.Schema(
       default: 0,
     },
 
+    subtotal: {
+      type: Number,
+      default: 0,
+    },
+
+    shippingFee: {
+      type: Number,
+      default: 0,
+    },
+
+    discountAmount: {
+      type: Number,
+      default: 0,
+    },
+
+    coupon: {
+      code: {
+        type: String,
+        default: "",
+      },
+      discount: {
+        type: Number,
+        default: 0,
+      },
+    },
+
+    statusHistory: [
+      {
+        status: {
+          type: String,
+        },
+        note: {
+          type: String,
+          default: "",
+        },
+        changedAt: {
+          type: Date,
+          default: Date.now,
+        },
+        by: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+          default: null,
+        },
+      },
+    ],
+
     status: {
       type: String,
       enum: [
@@ -59,13 +106,45 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["COD", "Momo", "Banking"],
+      enum: ["COD", "Momo", "Banking", "Stripe"],
       default: "COD",
+    },
+
+    paymentStatus: {
+      type: String,
+      enum: ["Pending", "Paid", "Failed", "Refunded"],
+      default: "Pending",
+    },
+
+    paymentInfo: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
 
     deliveryAddress: {
       type: String,
       required: true,
+    },
+
+    shippingProvider: {
+      type: String,
+      enum: ["SPX", "ViettelPost", "GHN", ""],
+      default: "",
+    },
+
+    trackingNumber: {
+      type: String,
+      default: "",
+    },
+
+    eta: {
+      type: Date,
+      default: null,
+    },
+
+    shipmentStatus: {
+      type: String,
+      default: "",
     },
   },
   {

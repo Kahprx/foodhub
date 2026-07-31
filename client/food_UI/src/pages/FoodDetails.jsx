@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaStar, FaTimes, FaExpand } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import api from "../services/api";
 import FoodCard from "../components/FoodCard";
 import FoodSkeleton from "../components/FoodSkeleton";
@@ -24,6 +24,8 @@ function FoodDetail() {
   const [hoveredStar, setHoveredStar] = useState(0);
   const [reviewComment, setReviewComment] = useState("");
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [activeImage, setActiveImage] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
 
   const { addToCart } = useCart();
   const { user } = useAuth();
@@ -80,6 +82,10 @@ function FoodDetail() {
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
     : "0.0";
 
+  const images = food?.images?.length ? food.images : [food?.image];
+  const hasDiscount = Number(food?.discountPrice) > 0 && Number(food?.discountPrice) < Number(food?.price);
+  const currentPrice = hasDiscount ? Number(food.discountPrice) : Number(food?.price);
+
   const toggleWishlist = async () => {
     try {
       if (isFavorite) {
@@ -122,11 +128,43 @@ function FoodDetail() {
   return (
     <section className="container mx-auto px-4 pt-28 pb-24 sm:px-6 lg:px-8 lg:pt-32">
       <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-2 lg:gap-16">
-        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }} className="relative">
-          <img src={food.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=1000"} alt={food.name} className="max-h-[550px] w-full rounded-3xl object-cover shadow-lift transition-all duration-500 hover:scale-105" />
-          <button type="button" onClick={toggleWishlist} className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-110" aria-label={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}>
-            {isFavorite ? <FaHeart className="text-xl text-red-500" /> : <FaRegHeart className="text-xl text-slate-500" />}
-          </button>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6 }}>
+          <div className="relative">
+            <img
+              src={images[activeImage] || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=1000"}
+              alt={food.name}
+              className="max-h-[550px] w-full cursor-zoom-in rounded-3xl object-cover shadow-lift transition-all duration-500"
+              onClick={() => setZoomOpen(true)}
+            />
+            {hasDiscount && (
+              <span className="absolute left-5 top-5 rounded-full bg-red-500 px-3 py-1.5 text-sm font-bold text-white">
+                -{Math.round(((Number(food.price) - currentPrice) / Number(food.price)) * 100)}%
+              </span>
+            )}
+            <button type="button" onClick={toggleWishlist} className="absolute right-5 top-5 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-110" aria-label={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}>
+              {isFavorite ? <FaHeart className="text-xl text-red-500" /> : <FaRegHeart className="text-xl text-slate-500" />}
+            </button>
+            <button type="button" onClick={() => setZoomOpen(true)} className="absolute bottom-5 right-5 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-110" aria-label="Phóng to">
+              <FaExpand />
+            </button>
+          </div>
+
+          {images.length > 1 && (
+            <div className="mt-4 flex gap-3">
+              {images.map((image, index) => (
+                <button
+                  key={`${image}-${index}`}
+                  type="button"
+                  onClick={() => setActiveImage(index)}
+                  className={`h-20 w-20 overflow-hidden rounded-2xl border-2 transition ${
+                    activeImage === index ? "border-coral" : "border-transparent opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <img src={image} alt={`${food.name} ${index + 1}`} className="h-full w-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}>
@@ -136,7 +174,12 @@ function FoodDetail() {
             <span className="text-gray-500">{average} ({reviews.length} đánh giá)</span>
           </div>
           <div className="mt-8"><p className="text-gray-500">Thương hiệu</p><h3 className="mt-2 text-2xl font-bold">{food.restaurant?.name || "HAPPYHOMES"}</h3></div>
-          <div className="mt-8"><p className="text-gray-500">Giá</p><h2 className="mt-2 text-3xl font-bold text-coral md:text-4xl">{Number(food.price).toLocaleString("vi-VN")}₫</h2></div>
+          <div className="mt-8"><p className="text-gray-500">Giá</p>
+            <div className="mt-2 flex items-center gap-3">
+              <h2 className="text-3xl font-bold text-coral md:text-4xl">{currentPrice.toLocaleString("vi-VN")}₫</h2>
+              {hasDiscount && <span className="text-2xl font-semibold text-gray-300 line-through">{Number(food.price).toLocaleString("vi-VN")}₫</span>}
+            </div>
+          </div>
           <div className="mt-8"><h3 className="text-2xl font-bold">Mô tả</h3><p className="mt-3 leading-8 text-gray-600">{food.description || "Đồ chơi chất lượng cao, an toàn cho trẻ em, mang lại niềm vui cho cả gia đình."}</p></div>
 
           <div className="mt-10 flex items-center justify-center gap-4 lg:justify-start">
@@ -216,8 +259,52 @@ function FoodDetail() {
 
       <motion.section className="mt-24" initial={{ opacity: 0, y: 80 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
         <h2 className="mb-10 text-3xl font-bold">Bạn cũng có thể thích</h2>
-        {relatedFoods.length === 0 ? <p className="text-lg text-gray-500">🧸 Chưa có đồ chơi liên quan</p> : <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">{relatedFoods.map((item) => <FoodCard key={item._id} id={item._id} name={item.name} restaurant={item.restaurant?.name} price={item.price} image={item.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"} />)}</div>}
+        {relatedFoods.length === 0 ? <p className="text-lg text-gray-500">🧸 Chưa có đồ chơi liên quan</p> : <div className="grid grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-3">{relatedFoods.map((item) => <FoodCard key={item._id} id={item._id} name={item.name} restaurant={item.restaurant?.name} price={item.price} discountPrice={item.discountPrice} image={item.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"} />)}</div>}
       </motion.section>
+
+      <AnimatePresence>
+        {zoomOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/90 p-4"
+            onClick={() => setZoomOpen(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-h-[90vh] max-w-4xl overflow-hidden rounded-3xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <img src={images[activeImage]} alt={food.name} className="max-h-[90vh] w-full object-contain" />
+              <button
+                type="button"
+                onClick={() => setZoomOpen(false)}
+                className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-lg transition hover:scale-110"
+                aria-label="Đóng phóng to"
+              >
+                <FaTimes />
+              </button>
+              {images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
+                  {images.map((image, index) => (
+                    <button
+                      key={`${image}-${index}`}
+                      type="button"
+                      onClick={() => setActiveImage(index)}
+                      className={`h-14 w-14 overflow-hidden rounded-xl border-2 ${activeImage === index ? "border-coral" : "border-white/40"}`}
+                    >
+                      <img src={image} alt="" className="h-full w-full object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

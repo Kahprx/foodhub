@@ -4,11 +4,45 @@ import SplitText from "./bits/SplitText";
 import SpecularButton from "./bits/SpecularButton";
 import TiltedCard from "./bits/TiltedCard";
 import Counter from "./bits/Counter";
+import CursorGrid from "./bits/CursorGrid";
+import Lightfall from "./bits/Lightfall";
 
 function Hero() {
   return (
     <section className="relative overflow-hidden pt-32 pb-10 lg:pt-36">
-      <Aurora>
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <Lightfall
+          colors={["#ff8f7a", "#ffc94d", "#17a398", "#a98fe0", "#3fbfae"]}
+          backgroundColor="#fff0e6"
+          speed={0.6}
+          streakCount={3}
+          streakWidth={1.2}
+          streakLength={1}
+          glow={1}
+          density={0.8}
+          twinkle={1}
+          zoom={3}
+          backgroundGlow={0.35}
+          opacity={0.55}
+        />
+      </div>
+      <div className="absolute inset-0 z-0">
+        <CursorGrid
+          cellSize={80}
+          color="#ff6b6b"
+          radius={180}
+          falloff="smooth"
+          holdTime={500}
+          fadeDuration={900}
+          lineWidth={1}
+          maxOpacity={0.35}
+          fillOpacity={0.04}
+          gridOpacity={0.03}
+          cellRadius={0}
+          clickPulse={false}
+        />
+      </div>
+      <Aurora className="z-10">
         <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-2">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 font-display text-sm font-bold text-ink/70 shadow-card backdrop-blur">

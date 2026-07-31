@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 import Hero from "../components/Hero";
 import SearchBar from "../components/SearchBar";
@@ -13,7 +14,7 @@ import api from "../services/api";
 
 const brands = ["LEGO", "Hasbro", "Barbie", "Hot Wheels", "Mattel", "Fisher-Price", "VTech", "Playmobil", "Bandai", "GIGA BLOCKS"];
 
-function SectionTitle({ accent, title, note }) {
+function SectionTitle({ note, title, accent }) {
   return (
     <FadeContent>
       <div className="mb-10">
@@ -23,6 +24,52 @@ function SectionTitle({ accent, title, note }) {
         </h2>
       </div>
     </FadeContent>
+  );
+}
+
+function CountdownTimer() {
+  const [timeLeft, setTimeLeft] = useState({ h: 8, m: 0, s: 0 });
+
+  useEffect(() => {
+    const target = new Date();
+    target.setHours(23, 59, 59, 999);
+
+    const tick = () => {
+      const diff = target.getTime() - Date.now();
+      if (diff <= 0) {
+        target.setDate(target.getDate() + 1);
+        return;
+      }
+      setTimeLeft({
+        h: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        m: Math.floor((diff / (1000 * 60)) % 60),
+        s: Math.floor((diff / 1000) % 60),
+      });
+    };
+
+    tick();
+    const timer = setInterval(tick, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const pad = (n) => String(n).padStart(2, "0");
+
+  return (
+    <div className="flex items-center gap-2">
+      {[
+        { value: pad(timeLeft.h), label: "Giờ" },
+        { value: pad(timeLeft.m), label: "Phút" },
+        { value: pad(timeLeft.s), label: "Giây" },
+      ].map((unit, idx) => (
+        <div key={unit.label} className="flex items-center gap-2">
+          {idx > 0 && <span className="text-2xl font-bold text-coral">:</span>}
+          <div className="rounded-xl bg-ink px-3 py-2 text-center shadow-card">
+            <span className="font-display text-2xl font-bold text-white">{unit.value}</span>
+            <span className="block text-[10px] font-bold uppercase tracking-widest text-ink/40">{unit.label}</span>
+          </div>
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -49,15 +96,28 @@ function ErrorState({ error }) {
 }
 
 function Home() {
-  const [foods, setFoods] = useState([]);
+  const [featured, setFeatured] = useState([]);
+  const [newArrivals, setNewArrivals] = useState([]);
+  const [bestSellers, setBestSellers] = useState([]);
+  const [flashSale, setFlashSale] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
-    const fetchFoods = async () => {
+    const fetchAll = async () => {
       try {
-        const response = await api.get("/foods");
-        setFoods(response.data.data);
+        const [featuredRes, newRes, bestRes, flashRes] = await Promise.all([
+          api.get("/foods?isFeatured=true&limit=6"),
+          api.get("/foods?sort=new&limit=6"),
+          api.get("/foods?sort=sold&limit=3"),
+          api.get("/foods?onSale=true&limit=4"),
+        ]);
+        setFeatured(featuredRes.data.data || []);
+        setNewArrivals(newRes.data.data || []);
+        setBestSellers(bestRes.data.data || []);
+        setFlashSale(flashRes.data.data || []);
       } catch (err) {
         console.error(err);
         setError("Không tải được danh sách đồ chơi.");
@@ -66,15 +126,30 @@ function Home() {
       }
     };
 
-    fetchFoods();
+    fetchAll();
   }, []);
+
+  const handleSubscribe = async (e) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      toast.error("Vui lòng nhập email");
+      return;
+    }
+
+    try {
+      setSubscribing(true);
+      await api.post("/subscribers", { email: email.trim() });
+      toast.success("Đăng ký nhận tin thành công! 🎉");
+      setEmail("");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Đăng ký thất bại");
+    } finally {
+      setSubscribing(false);
+    }
+  };
 
   if (loading) return <LoadingState />;
   if (error) return <ErrorState error={error} />;
-
-  const featured = foods.slice(0, 6);
-  const newArrivals = foods.slice(6, 12);
-  const bestSellers = [...foods].sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 3);
 
   return (
     <>
@@ -87,6 +162,38 @@ function Home() {
           <LogoLoop logos={brands} />
         </div>
       </section>
+
+      {flashSale.length > 0 && (
+        <section className="relative overflow-hidden bg-gradient-to-r from-red-600 via-coral to-amber-500 py-16">
+          <div className="bg-dots-light absolute inset-0 opacity-30" />
+          <div className="relative mx-auto max-w-7xl px-6">
+            <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+              <div>
+                <p className="font-display text-sm font-bold uppercase tracking-widest text-white/80">Chớp nhoáng</p>
+                <h2 className="mt-2 text-4xl font-bold text-white">
+                  FLASH <span className="text-ink">SALE</span> ⚡
+                </h2>
+              </div>
+              <CountdownTimer />
+            </div>
+            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-4">
+              {flashSale.map((food) => (
+                <FoodCard
+                  key={food._id}
+                  id={food._id}
+                  name={food.name}
+                  restaurant={food.restaurant?.name}
+                  category={food.category}
+                  price={food.price}
+                  discountPrice={food.discountPrice}
+                  image={food.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"}
+                  rating={food.rating}
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <section className="mx-auto max-w-7xl px-6 py-16">
         <SectionTitle note="Được chọn nhiều" title="Đồ chơi nổi" accent="bật" />
@@ -106,6 +213,7 @@ function Home() {
                 restaurant={food.restaurant?.name}
                 category={food.category}
                 price={food.price}
+                discountPrice={food.discountPrice}
                 image={food.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"}
                 rating={food.rating}
               />
@@ -127,6 +235,7 @@ function Home() {
                   restaurant={food.restaurant?.name}
                   category={food.category}
                   price={food.price}
+                  discountPrice={food.discountPrice}
                   image={food.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"}
                   rating={food.rating}
                 />
@@ -148,6 +257,7 @@ function Home() {
                   restaurant={food.restaurant?.name}
                   category={food.category}
                   price={food.price}
+                  discountPrice={food.discountPrice}
                   image={food.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"}
                   rating={food.rating}
                 />
@@ -171,13 +281,17 @@ function Home() {
                   Đăng ký nhận mã giảm giá và không bỏ lỡ sản phẩm mới.
                 </p>
               </div>
-              <form className="relative flex w-full flex-col gap-3 sm:flex-row">
+              <form onSubmit={handleSubscribe} className="relative flex w-full flex-col gap-3 sm:flex-row">
                 <input
                   type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="Nhập email của bạn..."
                   className="flex-1 rounded-2xl border-2 border-ink bg-cream px-5 py-4 font-semibold shadow-chunky-sm outline-none placeholder:text-ink/40 focus:bg-white"
                 />
-                <SpecularButton type="submit">Đăng ký</SpecularButton>
+                <SpecularButton type="submit" disabled={subscribing}>
+                  {subscribing ? "Đang đăng ký..." : "Đăng ký"}
+                </SpecularButton>
               </form>
             </div>
           </MagicBento>

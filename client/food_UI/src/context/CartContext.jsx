@@ -21,7 +21,7 @@ const fetchCart = async () =>{
         setCartItems((response.data.data?.items || []).map((item) => ({
           _id: item.food?._id || item.food,
           name: item.food?.name || "Unknown",
-          price: item.food?.price || 0,
+          price: item.food?.discountPrice > 0 ? item.food?.discountPrice : item.food?.price || 0,
           image: item.food?.image || "",
           quantity: item.quantity,
         })));
@@ -67,6 +67,7 @@ useEffect(() => {
         ...prev,
         {
           ...food,
+          price: Number(food.discountPrice) > 0 ? Number(food.discountPrice) : food.price,
           quantity,
         },
       ];

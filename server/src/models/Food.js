@@ -23,9 +23,41 @@ const foodSchema = new mongoose.Schema(
       default: "",
     },
 
+    images: {
+      type: [String],
+      default: [],
+    },
+
     category: {
       type: String,
       default: "Food",
+    },
+
+    brand: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Brand",
+      default: null,
+    },
+
+    stock: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+
+    soldCount: {
+      type: Number,
+      default: 0,
+    },
+
+    discountPrice: {
+      type: Number,
+      default: null,
+    },
+
+    isFeatured: {
+      type: Boolean,
+      default: false,
     },
 
     rating: {

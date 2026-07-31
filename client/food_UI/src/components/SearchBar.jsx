@@ -8,7 +8,7 @@ function SearchBar() {
         <input
           type="text"
           placeholder="Tìm đồ chơi hoặc thương hiệu..."
-          className="w-full rounded-full border border-black/5 bg-white py-4 pl-14 pr-4 font-semibold shadow-card outline-none transition placeholder:text-ink/40 focus:border-coral focus:shadow-soft"
+          className="w-full rounded-full border-2 border-ink bg-white py-4 pl-14 pr-5 font-semibold shadow-chunky-sm outline-none transition focus:shadow-chunky placeholder:text-ink/40"
         />
       </div>
     </div>

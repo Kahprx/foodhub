@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import api from "../services/api";
 
 const statusLabels = {
@@ -95,9 +96,17 @@ function Orders() {
                   </span>
                 </div>
 
-                <div className="mt-5 flex items-center justify-between border-t pt-5">
+                <div className="mt-5 flex items-center justify-between gap-4 border-t pt-5">
                   <span className="text-gray-500">Tổng thanh toán</span>
-                  <strong className="text-lg text-coral">{Number(order.totalPrice || 0).toLocaleString("vi-VN")}đ</strong>
+                  <div className="flex items-center gap-4">
+                    <strong className="text-lg text-coral">{Number(order.totalPrice || 0).toLocaleString("vi-VN")}đ</strong>
+                    <Link
+                      to={`/orders/${order._id}`}
+                      className="rounded-xl bg-teal px-4 py-2 text-sm font-bold text-white transition hover:bg-teal/90"
+                    >
+                      Chi tiết
+                    </Link>
+                  </div>
                 </div>
               </article>
             );

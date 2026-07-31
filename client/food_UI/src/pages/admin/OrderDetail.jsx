@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import api from "../../services/api";
 
 const statusColors = {
@@ -11,12 +12,54 @@ const statusColors = {
   Cancelled: "bg-red-100 text-red-700",
 };
 
+const shippingProviders = ["SPX", "GHN", "ViettelPost"];
+
 function OrderDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [shipping, setShipping] = useState({
+    shippingProvider: "",
+    trackingNumber: "",
+    shipmentStatus: "",
+    eta: "",
+  });
+  const [savingShipping, setSavingShipping] = useState(false);
+
+  useEffect(() => {
+    api
+      .get(`/orders/${id}`)
+      .then((res) => {
+        setOrder(res.data.data);
+        setShipping({
+          shippingProvider: res.data.data.shippingProvider || "",
+          trackingNumber: res.data.data.trackingNumber || "",
+          shipmentStatus: res.data.data.shipmentStatus || "",
+          eta: res.data.data.eta ? res.data.data.eta.slice(0, 10) : "",
+        });
+      })
+      .catch((err) =>
+        setError(
+          err.response?.data?.message || "Failed to load order"
+        )
+      )
+      .finally(() => setLoading(false));
+  }, [id]);
+
+  const handleSaveShipping = async () => {
+    setSavingShipping(true);
+    try {
+      const response = await api.put(`/orders/${id}/shipping`, shipping);
+      setOrder(response.data.data);
+      toast.success("Đã cập nhật thông tin vận chuyển");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Cập nhật thất bại");
+    } finally {
+      setSavingShipping(false);
+    }
+  };
 
   useEffect(() => {
     api
@@ -127,6 +170,59 @@ function OrderDetail() {
           <h2 className="text-xl font-bold mb-4">
             Order Info
           </h2>
+
+          <div className="mt-6 rounded-2xl border-2 border-teal/30 bg-teal/5 p-4">
+            <h3 className="mb-3 font-bold">🚚 Cập nhật vận chuyển</h3>
+            <div className="space-y-3">
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Đơn vị vận chuyển</label>
+                <select
+                  value={shipping.shippingProvider}
+                  onChange={(e) => setShipping({ ...shipping, shippingProvider: e.target.value })}
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                >
+                  <option value="">Chọn đơn vị</option>
+                  {shippingProviders.map((p) => (
+                    <option key={p} value={p}>{p}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Mã vận đơn</label>
+                <input
+                  value={shipping.trackingNumber}
+                  onChange={(e) => setShipping({ ...shipping, trackingNumber: e.target.value })}
+                  placeholder="VD: VN1234567890"
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Trạng thái vận chuyển</label>
+                <input
+                  value={shipping.shipmentStatus}
+                  onChange={(e) => setShipping({ ...shipping, shipmentStatus: e.target.value })}
+                  placeholder="VD: Đang tại kho trung chuyển"
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-500">Ngày dự kiến giao</label>
+                <input
+                  type="date"
+                  value={shipping.eta}
+                  onChange={(e) => setShipping({ ...shipping, eta: e.target.value })}
+                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                />
+              </div>
+              <button
+                onClick={handleSaveShipping}
+                disabled={savingShipping}
+                className="w-full rounded-lg bg-teal px-3 py-2 font-bold text-white transition hover:bg-teal/90 disabled:opacity-40"
+              >
+                {savingShipping ? "Đang lưu..." : "Lưu thông tin vận chuyển"}
+              </button>
+            </div>
+          </div>
 
           <div className="space-y-3 text-sm">
             <div>

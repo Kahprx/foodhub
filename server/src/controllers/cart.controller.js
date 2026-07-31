@@ -31,16 +31,10 @@ export const addToCart = async (req, res) => {
 export const getCart = async(req,res) => {
   try{
     const result = await getCarService(req.user.id);
-    if(!result){
-      return res.status(404).json({
-        success:false,
-        message:"Không tìm thấy món ăn",
-      })
-    }
     return res.status(200).json({
       success : true,
-      totalPrice:result.totalPrice,
-      data : result.cart,
+      totalPrice: result?.totalPrice || 0,
+      data : result?.cart || [],
     })
   } catch(error){
     return res.status(500).json({

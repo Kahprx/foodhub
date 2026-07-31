@@ -7,23 +7,21 @@ function Button({
 
   const variants = {
     primary:
-      "bg-orange-500 hover:bg-orange-600 text-white",
+      "bg-coral text-white border-ink hover:bg-teal",
 
     success:
-      "bg-green-500 hover:bg-green-600 text-white",
+      "bg-teal text-white border-ink hover:bg-coral",
 
     danger:
-      "bg-red-500 hover:bg-red-600 text-white",
+      "bg-red-500 text-white border-ink hover:bg-red-600",
 
     outline:
-      "border border-orange-500 text-orange-500 hover:bg-orange-50",
+      "bg-white text-ink border-ink hover:bg-sunny/40",
   };
 
   const sizes = {
     sm: "px-3 py-2 text-sm",
-
     md: "px-5 py-3",
-
     lg: "px-7 py-4 text-lg",
   };
 
@@ -33,12 +31,17 @@ function Button({
       className={`
         ${variants[variant]}
         ${sizes[size]}
-        rounded-xl
-        font-semibold
-        shadow-md
-        hover:shadow-xl
+        rounded-2xl
+        border-2
+        font-display
+        font-bold
+        shadow-chunky-sm
+        hover:-translate-y-0.5
+        hover:shadow-chunky
+        active:translate-y-0
+        active:shadow-chunky-sm
         transition-all
-        duration-300
+        duration-200
       `}
     >
       {children}

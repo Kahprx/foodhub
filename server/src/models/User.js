@@ -35,6 +35,24 @@ const userSchema = new mongoose.Schema({
         default : "",
 
     },
+    favorites: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Food",
+    }],
+    recentlyViewed: [{
+        food: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Food",
+        },
+        viewedAt: {
+            type: Date,
+            default: Date.now,
+        },
+    }],
+    isDeleted: {
+        type: Boolean,
+        default: false,
+    },
 },
 {
     timestamps : true,

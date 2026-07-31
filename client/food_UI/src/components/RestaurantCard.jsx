@@ -57,7 +57,7 @@ function RestaurantCard({
 
         </div>
 
-        <div className="flex items-center gap-2 mt-3 text-orange-500">
+        <div className="flex items-center gap-2 mt-3 text-coral">
 
           <FaMotorcycle />
 

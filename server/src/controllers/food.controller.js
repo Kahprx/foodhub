@@ -1,6 +1,7 @@
 import {
   createFoodService,
   getAllFoodsService,
+  getRecommendedFoodsService,
   getFoodByIdService,
   updateFoodService,
   deleteFoodService,
@@ -87,26 +88,34 @@ export const updateFood = async (req, res) => {
     });
   }
 };
-export const deleteFood = async (req,res) =>{
-  try{
-    const {id} = req.params;
-    
-    const food = await deleteFoodService(id);
+  export const deleteFood = async (req,res) =>{
+    try{
+      const {id} = req.params;
+      
+      const food = await deleteFoodService(id);
 
-    if(!food){
-      return res.status(404).json({
-        success : false,
-        message:"Không tìm thấy món ăn",
+      if(!food){
+        return res.status(404).json({
+          success : false,
+          message:"Không tìm thấy món ăn",
+        });
+      }
+      return res.status(200).json({
+        success :true,
+        message :"xóa món ăn thành công",
+      });
+    }catch (error){
+      return res.status(500).json({
+        success: false,
+        message: error.message,
       });
     }
-    return res.status(200).json({
-      success :true,
-      message :"xóa món ăn thành công",
-    });
-  }catch (error){
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+  };
+export const getRecommendedFoods = async (req, res) => {
+  try {
+    const foods = await getRecommendedFoodsService(req.query);
+    return res.status(200).json({ success: true, data: foods });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
 };

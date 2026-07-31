@@ -1,118 +1,64 @@
 import { motion } from "framer-motion";
-import { FaHeart, FaStar } from "react-icons/fa";
-import Button from "./ui/Button";
+import { FaEye, FaHeart, FaRegHeart, FaStar } from "react-icons/fa";
 import { Link } from "react-router-dom";
-function FoodCard({
-  id,
-  name,
-  restaurant,
-  price,
-  image,
-}) {
+import { toast } from "react-toastify";
+import { useCart } from "../context/CartContext";
+import { useWishlist } from "../context/WishListContext";
+
+function FoodCard({ id, name, restaurant, price, image, category = "Toy", rating = 4.8, onQuickView, isComparing = false, onToggleCompare }) {
+  const { addToCart } = useCart();
+  const { wishlist, addWishlist, removeWishlist } = useWishlist();
+  const food = { _id: id, name, restaurant, price, image, category, rating };
+  const isFavorite = wishlist.some((item) => item._id === id);
+
+  const onToggleFavorite = async () => {
+    try {
+      if (isFavorite) {
+        await removeWishlist(id);
+        toast.info("Đã xóa món khỏi Wishlist.");
+      } else {
+        await addWishlist(id);
+        toast.success("Đã thêm món vào Wishlist.");
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Vui lòng đăng nhập để dùng Wishlist.");
+    }
+  };
+
   return (
-     <Link to={`/foods/${id}`}>
-      <motion.div
-        whileHover={{ y: -8, scale: 1.02 }}
-        transition={{ duration: 0.25 }}
-        className="
-        bg-white
-        rounded-3xl
-        overflow-hidden
-        shadow-md
-        hover:shadow-2xl
-        "
-      >
-      
-        {/* Image */}
-
-        <div className="relative">
-
-          <img
-            src={image}
-            alt={name}
-            className="w-full h-56 object-cover"
-          />
-
-          <button
-            className="
-            absolute
-            top-4
-            left-4
-            bg-white
-            p-3
-            rounded-full
-            shadow
-            "
-          >
-            <FaHeart className="text-red-500" />
+    <motion.article
+      whileHover={{ y: -8 }}
+      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      className="group flex flex-col overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-black/5 transition-shadow duration-300 hover:shadow-lift"
+    >
+      <Link to={`/foods/${id}`} className="block">
+        <div className="relative overflow-hidden">
+          <img src={image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"} alt={name} className="h-56 w-full object-cover transition duration-500 group-hover:scale-105" />
+          <button type="button" onClick={(event) => { event.preventDefault(); onToggleFavorite?.(id); }} className="absolute left-4 top-4 rounded-full bg-white/90 p-3 shadow-card backdrop-blur transition hover:scale-110" aria-label={isFavorite ? "Bỏ yêu thích" : "Thêm vào yêu thích"}>
+            {isFavorite ? <FaHeart className="text-coral" /> : <FaRegHeart className="text-ink/50" />}
           </button>
-
-          <span
-            className="
-            absolute
-            top-4
-            right-4
-            bg-orange-500
-            text-white
-            text-xs
-            px-3
-            py-1
-            rounded-full
-            "
-          >
-            Best Seller
-          </span>
-
+          <span className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-sunny to-amber-300 px-3 py-1 font-display text-xs font-bold text-ink shadow-card">{category}</span>
+          <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-3 bg-ink/75 py-3 font-display font-bold text-white backdrop-blur transition duration-300 group-hover:translate-y-0">
+            <button type="button" onClick={(event) => { event.preventDefault(); onQuickView?.(food); }} className="flex items-center gap-2 hover:text-sunny"><FaEye /> Xem nhanh</button>
+            <button type="button" onClick={(event) => { event.preventDefault(); onToggleCompare?.(food); }} className={`rounded-lg px-2 py-1 text-xs ${isComparing ? "bg-sunny text-ink" : "bg-white/20"}`}>{isComparing ? "Đã chọn" : "So sánh"}</button>
+          </div>
         </div>
-
-        {/* Content */}
-
-        <div className="p-6">
-
-          <h2 className="text-2xl font-bold">
-            {name}
-          </h2>
-
-          <div className="flex items-center gap-2 mt-3">
-
-            <FaStar className="text-yellow-400" />
-
-            <span className="font-semibold">
-              4.8
-            </span>
-
-            <span className="text-gray-500 text-sm">   
-              (250 đánh giá)
-            </span>
-
+        <div className="p-6 pb-3">
+          <h2 className="truncate text-xl font-bold">{name}</h2>
+          <p className="mt-1 font-display text-xs font-bold uppercase tracking-wider text-teal">{category}</p>
+          <div className="mt-2 flex items-center gap-2">
+            <FaStar className="text-amber-400" />
+            <span className="font-bold">{Number(rating).toFixed(1)}</span>
+            <span className="truncate text-sm text-ink/50">• {restaurant?.name || restaurant || "HAPPYHOMES"}</span>
           </div>
-
-          <p className="mt-3 text-gray-500">
-            {restaurant}
-          </p>
-
-          <div className="mt-5">
-
-            <p className="text-2xl font-bold text-orange-500">
-              {Number(price).toLocaleString("vi-VN")}đ
-            </p>
-
-          </div>
-
-          <div className="mt-6">
-
-            <Button variant="primary">
-              Đặt món ngay
-            </Button>
-
-          </div>
-
+          <p className="mt-4 text-2xl font-bold text-coral">{Number(price).toLocaleString("vi-VN")}₫</p>
         </div>
-
-      </motion.div>
-    </Link>
+      </Link>
+      <div className="px-6 pb-6">
+        <button type="button" onClick={() => addToCart(food, 1)} className="w-full rounded-full bg-coral px-4 py-3 font-display font-bold text-white shadow-card transition hover:-translate-y-0.5 hover:bg-coral/90 hover:shadow-soft active:translate-y-0 active:scale-[0.98]">Thêm vào giỏ</button>
+      </div>
+    </motion.article>
   );
 }
-
 
 export default FoodCard;

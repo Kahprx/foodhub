@@ -56,13 +56,13 @@ function Cart() {
             Giỏ hàng trống
           </h1>
           <p className="mt-6 text-gray-500 text-lg">
-            Bạn chưa thêm món ăn nào, vui lòng đặt món ăn
+            Bạn chưa thêm đồ chơi nào vào giỏ
           </p>
           <Link
             to="/menu"
-            className="inline-block mt-10 px-8 py-4 rounded-2xl bg-orange-500 hover:bg-orange-600 text-white font-bold transition hover:scale-105 active:scale-95"
+            className="inline-block mt-10 px-8 py-4 rounded-2xl bg-coral text-white font-bold transition hover:-translate-y-0.5 hover:shadow-soft active:translate-y-0"
           >
-            🍔 Khám phá Menu
+            🧸 Khám phá Shop
           </Link>
         </div>
       </motion.section>
@@ -70,7 +70,7 @@ function Cart() {
   }
 
   return (
-    <section className="container mx-auto px-4 sm:px-6 py-24 lg:py-32">
+    <section className="container mx-auto px-4 sm:px-6 pt-28 lg:pt-32 pb-24">
 
       <div className="flex flex-col sm:flex-row gap-5 justify-between items-center mb-10">
 
@@ -136,13 +136,13 @@ function Cart() {
               whileHover={{
                 scale: 1.01,
               }}
-              className="bg-white/90 backdrop-blur-xl border border-gray-100 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col sm:flex-row gap-6 items-center"
+              className="bg-white ring-1 ring-black/5 rounded-3xl shadow-card hover:shadow-lift hover:-translate-y-1 transition-all duration-300 p-5 flex flex-col sm:flex-row gap-6 items-center"
             >
 
               <motion.img
                 src={
                   item.image ||
-                  "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800"
+                  "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=800"
                 }
                 alt={item.name}
                 whileHover={{
@@ -172,7 +172,7 @@ function Cart() {
                   {item.name}
                 </h2>
 
-                <p className="text-orange-500 font-bold text-xl mt-2">
+                <p className="text-coral font-bold text-xl mt-2">
                   {item.price.toLocaleString()}đ
                 </p>
 
@@ -202,7 +202,7 @@ function Cart() {
 
                   <motion.span
                     layout
-                    className="w-9 h-9 rounded-full bg-orange-100 text-orange-600 font-bold flex items-center justify-center"
+                    className="w-9 h-9 rounded-full bg-sunny text-ink font-bold flex items-center justify-center"
                   >
                     {item.quantity}
                   </motion.span>
@@ -211,12 +211,12 @@ function Cart() {
                     onClick={() =>
                       increaseQuantity(item._id)
                     }
-                    className="
+                      className="
                       w-9
                       h-9
                       rounded-lg
-                      bg-orange-500
-                      hover:bg-orange-600
+                      bg-coral
+                      hover:bg-coral/90
                       text-white
                       transition
                       font-bold
@@ -231,7 +231,7 @@ function Cart() {
 
               <button
                 onClick={() => {
-                  if (window.confirm("Bạn có chắc muốn xóa món này?")) {
+                  if (window.confirm("Bạn có chắc muốn xóa đồ chơi này?")) {
                     removeFromCart(item._id);
                   }
                 }}
@@ -271,15 +271,15 @@ function Cart() {
 
         <div
           className="
-            bg-gradient-to-br
-            from-orange-50
-            to-white
+            bg-white
+            ring-1
+            ring-black/5
             rounded-3xl
-            shadow-2xl
+            shadow-lift
             p-8
             h-fit
             sticky
-            top-32
+            top-28
           "
         >
 
@@ -330,7 +330,7 @@ function Cart() {
                 className="
                   text-4xl
                   font-black
-                  text-orange-500
+                  text-coral
                   tracking-tight
                 "
               >
@@ -349,14 +349,13 @@ function Cart() {
         w-full
         py-4
         rounded-2xl
-        bg-gradient-to-r
-        from-orange-500
-        to-red-500
+        bg-teal
         text-white
         text-center
         font-bold
         text-lg
-        hover:scale-105
+        hover:-translate-y-0.5
+        hover:shadow-soft
         transition
     "
 >

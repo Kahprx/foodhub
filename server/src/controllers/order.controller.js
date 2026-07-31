@@ -1,5 +1,7 @@
+import { data } from "framer-motion/client";
 import { createOrderService, getMyOrdersService, getOrderByIdService, updateOrderStatusService,
-    cancelOrderService,getRevenueService,getAllOrdersService
+    cancelOrderService,getRevenueService,getAllOrdersService,getRevenueChartService, getOrderStatusService,
+    getRecentOrdersService,
  } from "../services/order.service.js";
 
 export const createOrder = async (req,res) =>{
@@ -133,5 +135,49 @@ export const getAllOrders = async (req, res) => {
       success: false,
       message: error.message,
     });
+  }
+};
+export const getRevenueChart = async (req, res) => {
+  try {
+    const data = await getRevenueChartService();
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const getOrderStatus = async (req, res) => {
+  try {
+    const data = await getOrderStatusService();
+
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+export const getRecentOrders = async (req,res) =>{
+  try{
+    const orders = await getRecentOrdersService();
+    return res.status(200).json({
+      success:true,
+      data:orders,
+    });
+  }catch(err){
+    return res.status(500).json({
+      success: false,
+      message: error.message
+  });
   }
 };

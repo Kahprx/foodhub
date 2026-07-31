@@ -113,3 +113,57 @@ export const getAllOrdersService = async () => {
     .populate("items.food", "name price image")
     .sort({ createdAt: -1 });
 };
+export const getRevenueChartService = async () =>{
+  return await Order.aggregate([
+    {
+      $match:{
+        status : "Completed",
+      },
+    },
+    {
+      $group:{
+        _id:{
+          year: {$year :"$createdAt"},
+          month:{$month :"$createdAt"},
+          day:{$dayOfMonth: "$createdAt"},
+        },
+        revenue :{
+          $sum :"$totalPrice",
+        },
+        orders:{
+          $sum : 1,
+        },
+      },
+    },
+    {
+      $sort:{
+        "_id.year":1,
+        "_id.month":1,
+        "_id.day":1,
+      },
+    },
+  ]);
+};
+export const getOrderStatusService = async () => {
+  return await Order.aggregate([
+    {
+      $group: {
+        _id: "$status",
+        value: { $sum: 1 },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        name: "$_id",
+        value: 1,
+      },
+    },
+  ]);
+};
+export const getRecentOrdersService = async() =>{
+  return await Order.find()
+    .populate("user", "fullName")
+    .sort({ createdAt : -1 })
+    .limit(5);
+};

@@ -4,6 +4,8 @@ import NavbarLogo from "./Navbar/NavbarLogo";
 import NavbarMenu from "./Navbar/NavbarMenu";
 import NavbarActions from "./Navbar/NavbarActions";
 import MobileDrawer from "./Navbar/MobileDrawer";
+import NavbarUser from "./Navbar/NavbarUser";
+
 function Navbar() {
   const [open, setOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -21,33 +23,26 @@ function Navbar() {
   }, []);
 
   return (
-    <nav
-      className="group fixed top-0 left-0 w-full z-50 rounded-b-3xl overflow-hidden transition-all duration-300"
-    >
-      {/* Banner GIF */}
-      <div className="absolute inset-0 overflow-hidden">
-        <img
-          src="/banner/f1c3fc727775a7378b32c4596e2e0ca2.gif"
-          alt=""
-          className="w-full h-full object-cover scale-110 blur-sm"
-        />
-        <div className="absolute inset-0 bg-white/70 group-hover:bg-white/40 backdrop-blur-xl border-b border-white/30 shadow-lg transition-all duration-500" />
-      </div>
-
-      <div className="relative container mx-auto h-16 px-6 flex justify-between items-center">
-
+    <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-3 sm:px-6">
+      <div
+        className={`mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 rounded-2xl border px-4 transition-all duration-300 sm:px-6 ${
+          isScrolled
+            ? "border-black/5 bg-white/90 shadow-soft backdrop-blur-xl"
+            : "border-white/70 bg-white/60 backdrop-blur-xl"
+        }`}
+      >
         <NavbarLogo />
-        
+
         <NavbarSearch />
 
         <NavbarMenu />
 
-        <NavbarActions onOpen={() => setOpen(true)} />
+        <NavbarUser />
 
+        <NavbarActions onOpen={() => setOpen(true)} />
       </div>
 
       <MobileDrawer open={open} onClose={() => setOpen(false)} />
-
     </nav>
   );
 }

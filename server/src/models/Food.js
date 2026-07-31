@@ -28,6 +28,13 @@ const foodSchema = new mongoose.Schema(
       default: "Food",
     },
 
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 4.5,
+    },
+
     isAvailable: {
       type: Boolean,
       default: true,

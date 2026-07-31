@@ -68,3 +68,7 @@ export const loginService = async(userData)=>{
         },
     };
 };
+
+export const getUsersService = async () => {
+    return User.find({ isDeleted: { $ne: true } }).select("-password").sort({ createdAt: -1 });
+};

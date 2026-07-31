@@ -5,7 +5,7 @@ function Success() {
   const orderId = Math.floor(Math.random() * 1000000);
 
   return (
-    <section className="min-h-screen flex justify-center items-center px-6">
+    <section className="min-h-screen flex justify-center items-center px-6 pt-20">
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -14,7 +14,9 @@ function Success() {
         className="
           bg-white
           rounded-3xl
-          shadow-xl
+          shadow-lift
+          ring-1
+          ring-black/5
           p-12
           text-center
           max-w-lg
@@ -39,7 +41,7 @@ function Success() {
         </h1>
 
         <p className="text-gray-500 mt-4">
-          Cảm ơn bạn đã sử dụng FoodHub.
+          Cảm ơn bạn đã mua sắm tại HAPPYHOMES.
         </p>
 
         <div className="mt-8">
@@ -48,7 +50,7 @@ function Success() {
             Mã đơn hàng
           </p>
 
-          <h2 className="text-3xl font-bold text-orange-500">
+          <h2 className="text-3xl font-bold text-coral">
             #{orderId}
           </h2>
 
@@ -62,8 +64,8 @@ function Success() {
             px-8
             py-4
             rounded-2xl
-            bg-orange-500
-            hover:bg-orange-600
+            bg-coral
+            hover:bg-coral/90
             text-white
             font-bold
           "

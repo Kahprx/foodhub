@@ -1,1 +1,55 @@
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap");
 @import "tailwindcss";
+
+@theme {
+  --color-cream: #fdf8f2;
+  --color-ink: #33303a;
+  --color-ink-soft: #6f6a76;
+  --color-coral: #ff6b6b;
+  --color-teal: #17a398;
+  --color-sunny: #ffc94d;
+  --color-lilac: #a98fe0;
+  --color-mint: #3fbfae;
+
+  --font-display: "Fredoka", "Nunito", sans-serif;
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-chunky: 4px 4px 0 0 #33303a;
+  --shadow-chunky-sm: 3px 3px 0 0 #33303a;
+  --shadow-chunky-lg: 7px 7px 0 0 #33303a;
+
+  --shadow-soft: 0 10px 30px -10px rgb(51 48 58 / 0.18);
+  --shadow-card: 0 4px 20px -6px rgb(51 48 58 / 0.14);
+  --shadow-lift: 0 18px 40px -12px rgb(51 48 58 / 0.25);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+  }
+
+  ::selection {
+    @apply bg-sunny text-ink;
+  }
+}
+
+@utility bg-dots {
+  background-image: radial-gradient(#33303a 1.5px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+@utility bg-dots-light {
+  background-image: radial-gradient(#33303a26 1.5px, transparent 1.5px);
+  background-size: 18px 18px;
+}

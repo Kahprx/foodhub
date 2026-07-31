@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useCart } from "../context/CartContext";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
+
 function Checkout() {
   const navigate = useNavigate();
   const [form , setForm] = useState ({
@@ -10,6 +12,8 @@ function Checkout() {
     note :""
 });
 const [errors , setErrors] = useState({});
+const [placingOrder, setPlacingOrder] = useState(false);
+const [orderError, setOrderError] = useState("");
 
  const handleChange = (e) =>{
     const {name, value } = e.target;
@@ -37,13 +41,36 @@ const [errors , setErrors] = useState({});
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
  };
- const handlePlaceOrder = () => {
+const handlePlaceOrder = async () => {
   if (!validateForm()) return;
 
-  clearCart();
+  try {
+    setPlacingOrder(true);
+    setOrderError("");
 
-  navigate("/success");
-};  
+    await api.post(
+      "/orders",
+      {
+        deliveryAddress: `${form.name} - ${form.phone} - ${form.address}${
+          form.note ? ` - Ghi chú: ${form.note}` : ""
+        }`,
+        paymentMethod: "COD",
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    clearCart();
+    navigate("/success");
+  } catch (err) {
+    setOrderError(err.response?.data?.message || "Không thể tạo đơn hàng. Vui lòng thử lại.");
+  } finally {
+    setPlacingOrder(false);
+  }
+};
  const {cartItems , clearCart,} = useCart();
  const subtotal = cartItems.reduce(
   (total , item)=> total + item.price * item.quantity, 0
@@ -52,18 +79,18 @@ const [errors , setErrors] = useState({});
 
 const total = subtotal + shippingFee;
   return (
-    <section className="container mx-auto px-6 py-28">
-      <h1 className="text-5xl font-bold mb-10">
-        Checkout
+    <section className="container mx-auto px-6 pt-28 lg:pt-32 pb-24">
+      <h1 className="font-display text-4xl lg:text-5xl font-bold mb-10">
+        Thanh toán
       </h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
 
         {/* Left */}
-        <div className="lg:col-span-2 bg-white rounded-3xl shadow-lg p-8">
+        <div className="lg:col-span-2 bg-white rounded-3xl shadow-card ring-1 ring-black/5 p-8">
 
-          <h2 className="text-2xl font-bold mb-6">
-            Delivery Information
+          <h2 className="font-display text-2xl font-bold mb-6">
+            Thông tin giao hàng
           </h2>
 
           <div className ="space-y-6">
@@ -86,7 +113,7 @@ const total = subtotal + shippingFee;
               py-3
               focus:outline-none
               focus:ring-2
-              focus:ring-orange-500
+              focus:ring-coral/30
               "
               />
               {
@@ -113,7 +140,7 @@ const total = subtotal + shippingFee;
                py-3
                focus:outline-none
                focus:ring-2
-               focus:ring-orange-500
+               focus:ring-coral/30
               "
               />
               {
@@ -143,7 +170,7 @@ const total = subtotal + shippingFee;
                resize-none
                focus:outline-none
                focus:ring-2
-               focus:ring-orange-500
+               focus:ring-coral/30
               "
               />
               {
@@ -164,7 +191,7 @@ const total = subtotal + shippingFee;
       value={form.note}
       onChange={handleChange}
       rows="3"
-      placeholder="Ví dụ: Không cay, giao sau 18h..."
+       placeholder="Ví dụ: Gói quà tặng, giao giờ hành chính..."
       className="
         w-full
         border
@@ -174,7 +201,7 @@ const total = subtotal + shippingFee;
         resize-none
         focus:outline-none
         focus:ring-2
-        focus:ring-orange-500
+        focus:ring-coral/30
       "
     />
   </div>
@@ -184,10 +211,10 @@ const total = subtotal + shippingFee;
         </div>
 
         {/* Right */}
-        <div className="bg-white rounded-3xl shadow-lg p-8 h-fit">
+        <div className="bg-white rounded-3xl shadow-card ring-1 ring-black/5 p-8 h-fit lg:sticky lg:top-28">
 
-          <h2 className="text-2xl font-bold mb-6">
-            Order Summary
+          <h2 className="font-display text-2xl font-bold mb-6">
+            Tóm tắt đơn hàng
           </h2>
 
           <div className="space-y-5">
@@ -257,7 +284,7 @@ const total = subtotal + shippingFee;
 
     <span>Tổng</span>
 
-    <span className="text-orange-500">
+    <span className="text-coral">
 
       {total.toLocaleString()}đ
 
@@ -268,22 +295,30 @@ const total = subtotal + shippingFee;
   <button
   type="button"
    onClick={handlePlaceOrder}
+   disabled={placingOrder}
 className="
 w-full
 mt-6
 py-4
 rounded-2xl
-bg-orange-500
-hover:bg-orange-600
+ bg-coral
+ hover:bg-coral/90
+ hover:shadow-soft
 text-white
 font-bold
 transition
+disabled:cursor-not-allowed
+disabled:opacity-60
 "
   >
 
-    Đặt hàng
+    {placingOrder ? "Đang đặt hàng..." : "Đặt hàng"}
 
   </button>
+
+  {orderError && (
+    <p className="mt-3 text-center text-sm text-red-500">{orderError}</p>
+  )}
 
 </div>
 

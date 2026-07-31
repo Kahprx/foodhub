@@ -18,8 +18,16 @@ export const getAllFoodsService = async (query) => {
     };
   }
   if (query.category) {
-  filter.category = query.category;
-}
+    filter.category = { $in: query.category.split(",") };
+  }
+
+  if (query.minPrice || query.maxPrice) {
+    filter.price = {};
+    if (query.minPrice) filter.price.$gte = Number(query.minPrice);
+    if (query.maxPrice) filter.price.$lte = Number(query.maxPrice);
+  }
+
+  if (query.minRating) filter.rating = { $gte: Number(query.minRating) };
 
 // Filter theo restaurant
 if (query.restaurant) {
@@ -35,6 +43,8 @@ if (query.sort === "price") {
   sort.name = 1;
 } else if (query.sort === "-name") {
   sort.name = -1;
+} else if (query.sort === "rating") {
+  sort.rating = -1;
 } else {
   sort.createdAt = -1; // Mặc định mới nhất
 }
@@ -55,6 +65,17 @@ if (query.sort === "price") {
   
 };
 
+export const getRecommendedFoodsService = async (query) => {
+  const filter = { isAvailable: true };
+  if (query.category) filter.category = query.category;
+  if (query.exclude) filter._id = { $ne: query.exclude };
+
+  return Food.find(filter)
+    .populate("restaurant", "name address phone")
+    .sort({ rating: -1, createdAt: -1 })
+    .limit(Math.min(Number(query.limit) || 6, 12));
+};
+
 export const getFoodByIdService = async(id)=>{
   return Food.findById(id)
   .populate("restaurant", "name address phone");
@@ -65,7 +86,7 @@ export const updateFoodService = async (id, foodData) => {
     id,
     foodData,
     {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }
   );

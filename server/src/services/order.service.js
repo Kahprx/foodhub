@@ -1,5 +1,5 @@
 import Order from "../models/Order.js";
-import Cart from "../models/Cart.js";
+import Cart from "../models/cart.js";
 import Food from "../models/Food.js";
 import Coupon from "../models/Coupon.js";
 import StockLog from "../models/StockLog.js";

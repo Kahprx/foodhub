@@ -84,12 +84,19 @@ function LoadingState() {
   );
 }
 
-function ErrorState({ error }) {
+function ErrorState({ error, onRetry }) {
   return (
     <div className="flex h-screen items-center justify-center">
       <div className="text-center">
         <h2 className="text-3xl font-bold text-coral">Có lỗi xảy ra</h2>
         <p className="mt-4 text-ink/60">{error}</p>
+        <button
+          type="button"
+          onClick={onRetry}
+          className="mt-6 rounded-2xl bg-coral px-6 py-3 font-bold text-white transition hover:bg-coral/90"
+        >
+          Thử lại
+        </button>
       </div>
     </div>
   );
@@ -106,28 +113,34 @@ function Home() {
   const [subscribing, setSubscribing] = useState(false);
 
   useEffect(() => {
-    const fetchAll = async () => {
-      try {
-        const [featuredRes, newRes, bestRes, flashRes] = await Promise.all([
-          api.get("/foods?isFeatured=true&limit=6"),
-          api.get("/foods?sort=new&limit=6"),
-          api.get("/foods?sort=sold&limit=3"),
-          api.get("/foods?onSale=true&limit=4"),
-        ]);
-        setFeatured(featuredRes.data.data || []);
-        setNewArrivals(newRes.data.data || []);
-        setBestSellers(bestRes.data.data || []);
-        setFlashSale(flashRes.data.data || []);
-      } catch (err) {
-        console.error(err);
-        setError("Không tải được danh sách đồ chơi.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchAll();
   }, []);
+
+  const fetchAll = async (attempt = 0) => {
+    try {
+      setError("");
+      const [featuredRes, newRes, bestRes, flashRes] = await Promise.all([
+        api.get("/foods?isFeatured=true&limit=6"),
+        api.get("/foods?sort=new&limit=6"),
+        api.get("/foods?sort=sold&limit=3"),
+        api.get("/foods?onSale=true&limit=4"),
+      ]);
+      setFeatured(featuredRes.data.data || []);
+      setNewArrivals(newRes.data.data || []);
+      setBestSellers(bestRes.data.data || []);
+      setFlashSale(flashRes.data.data || []);
+    } catch (err) {
+      console.error(err);
+      // Retry để đi qua Railway cold start (backend ngủ cần vài chục giây để wake)
+      if (attempt < 2) {
+        setTimeout(() => fetchAll(attempt + 1), 5000);
+      } else {
+        setError("Không tải được danh sách đồ chơi.");
+      }
+    } finally {
+      if (attempt >= 2) setLoading(false);
+    }
+  };
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
@@ -149,7 +162,7 @@ function Home() {
   };
 
   if (loading) return <LoadingState />;
-  if (error) return <ErrorState error={error} />;
+  if (error) return <ErrorState error={error} onRetry={() => fetchAll()} />;
 
   return (
     <>

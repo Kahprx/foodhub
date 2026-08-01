@@ -12,8 +12,8 @@ const BACKEND_URL = process.env.BACKEND_URL || "http://localhost:5000";
 const DIST = path.join(__dirname, "dist");
 
 const agent = BACKEND_URL.startsWith("https")
-  ? new https.Agent({ keepAlive: true })
-  : new http.Agent({ keepAlive: true });
+  ? new https.Agent({ keepAlive: true, maxSockets: 16, timeout: 30000 })
+  : new http.Agent({ keepAlive: true, maxSockets: 16, timeout: 30000 });
 
 const app = express();
 
@@ -27,8 +27,14 @@ app.use(
     target: BACKEND_URL,
     changeOrigin: true,
     agent,
+    timeout: 45000,
+    proxyTimeout: 45000,
     onError: (err, req, res) => {
-      res.status(502).json({ success: false, message: `Backend không khả dụng: ${err.message}` });
+      const status = err.code === "ETIMEDOUT" ? 504 : 502;
+      res.status(status).json({
+        success: false,
+        message: `Backend không phản hồi (${err.code || err.message}). Vui lòng thử lại sau giây lát.`,
+      });
     },
   })
 );

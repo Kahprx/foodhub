@@ -24,6 +24,8 @@ const fetchCart = async () =>{
           price: item.food?.discountPrice > 0 ? item.food?.discountPrice : item.food?.price || 0,
           image: item.food?.image || "",
           quantity: item.quantity,
+          stock: item.food?.stock ?? Infinity,
+          isAvailable: item.food?.isAvailable ?? true,
         })));
 
   } catch (err) {
@@ -43,6 +45,13 @@ useEffect(() => {
 }, [user]);
 
   const addToCart = (food, quantity) => {
+    const maxStock = food.stock ?? Infinity;
+    const exist = cartItems.find((item) => item._id === food._id);
+    if (exist && exist.quantity + quantity > maxStock) {
+      toast.error(`"${food.name}" chỉ còn ${maxStock} sản phẩm trong kho`);
+      return;
+    }
+
     toast.success(`${food.name} đã được thêm vào giỏ!`);
 
     if (user) {
@@ -75,10 +84,17 @@ useEffect(() => {
   };
 
   const increaseQuantity = (id) => {
+    const item = cartItems.find((i) => i._id === id);
+    const maxStock = item?.stock ?? Infinity;
+    if (item && item.quantity >= maxStock) {
+      toast.error("Không thể thêm quá số lượng trong kho");
+      return;
+    }
+
     if (user) {
-      const item = cartItems.find((i) => i._id === id);
-      if (item) {
-        api.put("/cart", { foodId: id, quantity: item.quantity + 1 }).catch(() => {});
+      const current = cartItems.find((i) => i._id === id);
+      if (current) {
+        api.put("/cart", { foodId: id, quantity: current.quantity + 1 }).catch(() => {});
       }
     }
 

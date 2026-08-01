@@ -167,17 +167,26 @@ export const forgotPasswordService = async (email) => {
   user.resetTokenExpires = new Date(Date.now() + 15 * 60 * 1000);
   await user.save();
 
+  const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
+  const resetLink = `${baseUrl}/reset-password?token=${resetToken}`;
+
   const emailSent = Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
   if (emailSent) {
-    await sendResetPasswordEmail(user.email, resetToken, user.fullName || user.email);
-    return { emailSent: true };
+    try {
+      await sendResetPasswordEmail(user.email, resetToken, user.fullName || user.email);
+      return { emailSent: true };
+    } catch (error) {
+      // SMTP lỗi (timeout, mạng, sai credential) -> không chặn người dùng,
+      // trả link trực tiếp để vẫn đặt lại được mật khẩu
+      console.error("[AuthService] Gửi email reset thất bại, dùng link fallback:", error.message);
+      return { emailSent: false, devMode: true, resetLink };
+    }
   }
 
-  const baseUrl = process.env.CLIENT_URL || "http://localhost:5173";
   return {
     emailSent: false,
     devMode: true,
-    resetLink: `${baseUrl}/reset-password?token=${resetToken}`,
+    resetLink,
   };
 };
 

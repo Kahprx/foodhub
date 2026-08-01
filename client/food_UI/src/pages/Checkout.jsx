@@ -61,6 +61,8 @@ function Checkout() {
     const newErrors = {};
     if (!form.name.trim()) newErrors.name = "Vui lòng nhập họ tên";
     if (!form.phone.trim()) newErrors.phone = "Vui lòng nhập số điện thoại";
+    else if (!/^(0|\+84)[0-9]{9,10}$/.test(form.phone.replace(/\s/g, "")))
+      newErrors.phone = "Số điện thoại không hợp lệ";
     if (!form.address.trim()) newErrors.address = "Vui lòng nhập địa chỉ";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -119,6 +121,21 @@ function Checkout() {
         Thanh toán
       </h1>
 
+      {cartItems.length === 0 && (
+        <div className="rounded-3xl bg-white p-10 text-center shadow-card ring-1 ring-black/5">
+          <p className="text-xl font-bold">Giỏ hàng của bạn đang trống</p>
+          <p className="mt-2 text-gray-500">Hãy thêm món ăn trước khi tiến hành thanh toán.</p>
+          <button
+            type="button"
+            onClick={() => navigate("/menu")}
+            className="mt-6 rounded-2xl bg-coral px-6 py-3 font-bold text-white transition hover:bg-coral/90"
+          >
+            Xem thực đơn
+          </button>
+        </div>
+      )}
+
+      {cartItems.length > 0 && (
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
         {/* Left */}
         <div className="lg:col-span-2 space-y-8">
@@ -278,6 +295,7 @@ function Checkout() {
           </div>
         </div>
       </div>
+      )}
     </section>
   );
 }

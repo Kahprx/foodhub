@@ -12,6 +12,9 @@ import swaggerSpec from "./swagger.js";
 
 const app = express();
 
+// Railway chạy sau reverse proxy -> tin header X-Forwarded-For để rate limiter hoạt động đúng
+app.set("trust proxy", 1);
+
 // Security
 app.use(helmet());
 

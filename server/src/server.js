@@ -1,5 +1,9 @@
 import dotenv from "dotenv";
+import dns from "node:dns";
 dotenv.config();
+
+// Gmail SMTP chỉ hỗ trợ IPv4; Railway có thể resolve ra IPv6 -> buộc dùng IPv4
+dns.setDefaultResultOrder("ipv4first");
 
 import { webcrypto } from "node:crypto";
 if (!globalThis.crypto) {

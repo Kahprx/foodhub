@@ -6,6 +6,9 @@ export const addToCartService = async (userId, foodId, quantity) => {
   if (!foodExists) {
     throw new Error("Món ăn không tồn tại");
   }
+  if (!foodExists.isAvailable) {
+    throw new Error(`"${foodExists.name}" hiện không khả dụng`);
+  }
 
   let cart = await Cart.findOne({ user: userId });
 
@@ -27,6 +30,13 @@ export const addToCartService = async (userId, foodId, quantity) => {
     (i) => i.food.toString() === foodId
   );
 
+  const requested = (item ? item.quantity : 0) + quantity;
+  if (foodExists.stock < requested) {
+    throw new Error(
+      `"${foodExists.name}" chỉ còn ${foodExists.stock} sản phẩm trong kho`
+    );
+  }
+
   if (item) {
     item.quantity += quantity;
   } else {
@@ -44,7 +54,7 @@ export const getCarService = async(userId) => {
   const cart = await Cart.findOne({user : userId})
   .populate({
     path:"items.food",
-    select:"name price image restaurant",
+    select:"name price discountPrice image stock isAvailable restaurant",
     populate:{
       path:"restaurant", 
       select:"name address",
@@ -56,7 +66,8 @@ export const getCarService = async(userId) => {
   let totalPrice = 0;
   cart.items.forEach((item) =>{
     if (item.food){
-      totalPrice += item.food.price * item.quantity;
+      const unitPrice = item.food.discountPrice > 0 ? item.food.discountPrice : item.food.price;
+      totalPrice += unitPrice * item.quantity;
     }
   });
   return {
@@ -74,6 +85,16 @@ export const updateCartItemService = async (userId, foodId, quantity) => {
   );
 
   if (!item) return null;
+
+  const foodExists = await Food.findById(foodId);
+  if (foodExists && !foodExists.isAvailable) {
+    throw new Error(`"${foodExists.name}" hiện không khả dụng`);
+  }
+  if (foodExists && quantity > foodExists.stock) {
+    throw new Error(
+      `"${foodExists.name}" chỉ còn ${foodExists.stock} sản phẩm trong kho`
+    );
+  }
 
   item.quantity = quantity;
 

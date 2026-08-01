@@ -16,6 +16,9 @@ const VALID_STATUS = [
   "Cancelled",
 ];
 
+const VALID_PAYMENT_METHODS = ["COD", "Momo", "Banking", "Stripe"];
+const SHIPPING_FEES = { SPX: 20000, GHN: 25000, ViettelPost: 18000 };
+
 export const calculateCouponDiscount = async (subtotal, couponCode) => {
   if (!couponCode) return { discount: 0, coupon: null };
 
@@ -50,7 +53,22 @@ export const createOrderService = async (
   paymentMethod,
   options = {}
 ) => {
-  const { couponCode, shippingProvider } = options;
+  const { couponCode } = options;
+
+  if (!deliveryAddress || !String(deliveryAddress).trim()) {
+    throw new Error("Vui lòng nhập địa chỉ giao hàng");
+  }
+
+  const normalizedPayment = VALID_PAYMENT_METHODS.includes(paymentMethod)
+    ? paymentMethod
+    : "COD";
+  const provider = Object.prototype.hasOwnProperty.call(
+    SHIPPING_FEES,
+    options.shippingProvider
+  )
+    ? options.shippingProvider
+    : "SPX";
+  const shippingFee = SHIPPING_FEES[provider];
 
   const cart = await Cart.findOne({ user: userId }).populate("items.food");
 
@@ -79,14 +97,10 @@ export const createOrderService = async (
     food: item.food._id,
     quantity: item.quantity,
     price: item.food.discountPrice ?? item.food.price,
+    name: item.food.name,
   }));
 
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
-  let shippingFee = 0;
-  if (options.shippingFee !== undefined) {
-    shippingFee = Number(options.shippingFee) || 0;
-  }
 
   let discount = 0;
   let coupon = null;
@@ -101,32 +115,47 @@ export const createOrderService = async (
   const order = await Order.create({
     user: userId,
     restaurant,
-    items,
+    items: items.map(({ name, ...rest }) => rest),
     subtotal,
     shippingFee,
     discountAmount: discount,
     coupon: coupon ? { code: coupon.code, discount } : undefined,
     totalPrice,
-    paymentMethod,
+    paymentMethod: normalizedPayment,
     deliveryAddress,
-    shippingProvider,
+    shippingProvider: provider,
     statusHistory: [{ status: "Pending", note: "Đơn hàng được tạo" }],
   });
 
-  // Trừ stock + cập nhật soldCount
-  await Promise.all(
-    items.map(async (item) => {
-      await Food.findByIdAndUpdate(item.food, {
-        $inc: { stock: -item.quantity, soldCount: item.quantity },
-      });
+  // Trừ stock + cập nhật soldCount (atomic, chống bán quá hàng)
+  const reserved = new Map();
+  try {
+    for (const item of items) {
+      const updated = await Food.findOneAndUpdate(
+        { _id: item.food, stock: { $gte: item.quantity } },
+        { $inc: { stock: -item.quantity, soldCount: item.quantity } },
+        { new: true }
+      );
+      if (!updated) {
+        throw new Error(`"${item.name}" hiện không đủ hàng trong kho, vui lòng giảm số lượng`);
+      }
+      reserved.set(item.food.toString(), (reserved.get(item.food.toString()) || 0) + item.quantity);
       await StockLog.create({
         food: item.food,
         type: "sale",
         quantity: -item.quantity,
         note: `Đơn hàng #${order._id.toString().slice(-6)}`,
       });
-    })
-  );
+    }
+  } catch (stockError) {
+    for (const [foodId, qty] of reserved.entries()) {
+      await Food.findByIdAndUpdate(foodId, {
+        $inc: { stock: qty, soldCount: -qty },
+      });
+    }
+    await Order.findByIdAndDelete(order._id);
+    throw stockError;
+  }
 
   // Tăng lượt dùng coupon
   if (coupon) {

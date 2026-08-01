@@ -96,7 +96,7 @@ export const createOrderService = async (
   const items = validItems.map((item) => ({
     food: item.food._id,
     quantity: item.quantity,
-    price: item.food.discountPrice ?? item.food.price,
+    price: item.food.discountPrice > 0 ? item.food.discountPrice : item.food.price,
     name: item.food.name,
   }));
 

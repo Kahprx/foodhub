@@ -128,7 +128,7 @@ function Checkout() {
           <button
             type="button"
             onClick={() => navigate("/menu")}
-            className="mt-6 rounded-2xl bg-coral px-6 py-3 font-bold text-white transition hover:bg-coral/90"
+            className="mt-6 rounded-3xl bg-coral px-6 py-3 font-bold text-white transition hover:bg-coral/90"
           >
             Xem thực đơn
           </button>
@@ -153,7 +153,7 @@ function Checkout() {
                       key={address}
                       type="button"
                       onClick={() => setForm((prev) => ({ ...prev, address }))}
-                      className="rounded-xl border border-gray-200 px-4 py-2 text-left text-sm text-gray-600 transition hover:border-coral hover:text-coral"
+                      className="rounded-2xl border border-gray-200 px-4 py-2 text-left text-sm text-gray-600 transition hover:border-coral hover:text-coral"
                     >
                       {address}
                     </button>
@@ -207,7 +207,7 @@ function Checkout() {
                   key={provider.id}
                   type="button"
                   onClick={() => setShippingProvider(provider.id)}
-                  className={`rounded-2xl border-2 p-4 text-left transition ${
+                  className={`rounded-3xl border-2 p-4 text-left transition ${
                     shippingProvider === provider.id
                       ? "border-coral bg-coral/5"
                       : "border-gray-100 hover:border-coral/40"
@@ -232,7 +232,7 @@ function Checkout() {
                     setPaymentMethod(method.id);
                     localStorage.setItem(PAYMENT_STORAGE_KEY, method.id);
                   }}
-                  className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition ${
+                  className={`flex items-center gap-3 rounded-3xl border-2 p-4 text-left transition ${
                     paymentMethod === method.id
                       ? "border-coral bg-coral/5"
                       : "border-gray-100 hover:border-coral/40"

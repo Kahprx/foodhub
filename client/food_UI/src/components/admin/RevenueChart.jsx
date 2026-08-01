@@ -17,11 +17,17 @@ function RevenueChart({data}){
 
     }));
     return(
-         <div className="bg-white rounded-2xl p-6 mt-8">
-          <h2 className="text-xl font-bold mb-6">
-             Revenue Overview
-         </h2>
-         <ResponsiveContainer width="100%" height={350}>
+         <div className="bg-white rounded-3xl shadow-md p-6">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-100 text-lg">📈</div>
+            <div>
+              <h2 className="text-xl font-bold mb-0">
+                Tổng quan doanh thu
+              </h2>
+              <p className="text-sm text-gray-500">Doanh thu theo ngày (đơn hoàn thành)</p>
+            </div>
+          </div>
+         <ResponsiveContainer width="100%" height={320}>
         <LineChart data={chartData}>
           <CartesianGrid strokeDasharray="3 3" />
 

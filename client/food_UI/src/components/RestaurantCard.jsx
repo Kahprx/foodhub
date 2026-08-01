@@ -11,7 +11,7 @@ function RestaurantCard({
     <div
       className="
       bg-white
-      rounded-2xl
+      rounded-3xl
       overflow-hidden
       shadow-md
       hover:shadow-xl

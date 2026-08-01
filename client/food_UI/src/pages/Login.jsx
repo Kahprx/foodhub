@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import api from "../services/api";
 import { useAuth } from "../context/AuthContext";
 import Aurora from "../components/bits/Aurora";
@@ -8,6 +8,7 @@ import SpecularButton from "../components/bits/SpecularButton";
 
 function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login } = useAuth();
 
   const [form, setForm] = useState({
@@ -62,7 +63,12 @@ function Login() {
 
       alert("🎉 Đăng nhập thành công!");
 
-      navigate(user.role === "admin" ? "/admin/dashboard" : "/");
+      const from = location.state?.from?.pathname || "/";
+      if (user.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else {
+        navigate(from, { replace: true });
+      }
     } catch (err) {
       console.log(err);
 

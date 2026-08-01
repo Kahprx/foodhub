@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import Aurora from "./bits/Aurora";
 import SplitText from "./bits/SplitText";
 import SpecularButton from "./bits/SpecularButton";
 import TiltedCard from "./bits/TiltedCard";
@@ -9,7 +8,7 @@ import Lightfall from "./bits/Lightfall";
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden pt-32 pb-10 lg:pt-36">
+    <section className="relative overflow-hidden pt-24 pb-10 lg:pt-36">
       <div className="pointer-events-none absolute inset-0 z-0">
         <Lightfall
           colors={["#ff8f7a", "#ffc94d", "#17a398", "#a98fe0", "#3fbfae"]}
@@ -42,14 +41,14 @@ function Hero() {
           clickPulse={false}
         />
       </div>
-      <Aurora className="z-10">
-        <div className="mx-auto grid max-w-7xl items-center gap-14 px-6 lg:grid-cols-2">
+      <div className="relative z-10">
+        <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 lg:grid-cols-2 lg:gap-14 lg:px-6">
           <div>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 font-display text-sm font-bold text-ink/70 shadow-card backdrop-blur">
               🧸 Nhà của những niềm vui
             </span>
 
-            <h1 className="mt-6 font-display text-5xl font-bold leading-[1.05] md:text-6xl">
+            <h1 className="mt-6 font-display text-4xl font-bold leading-[1.05] sm:text-5xl md:text-6xl">
               <SplitText text="Đồ chơi hay," perWord />
               <br />
               <span className="text-coral">
@@ -57,24 +56,27 @@ function Hero() {
               </span>
             </h1>
 
-            <p className="mt-6 max-w-md text-lg leading-8 text-ink/70">
+            <p className="mt-5 max-w-md text-base leading-7 text-ink/70 sm:text-lg sm:leading-8">
               LEGO, robot, thú bông và hàng nghìn món đồ chơi từ các thương hiệu
               uy tín — giao nhanh tận nhà, an toàn cho bé.
             </p>
 
-            <div className="mt-9 flex flex-wrap items-center gap-5">
+            <div className="mt-8 flex flex-wrap items-center gap-4 sm:mt-9 sm:gap-5">
               <Link to="/foods">
-                <SpecularButton>Mua sắm ngay</SpecularButton>
+                <SpecularButton className="px-6 py-3 text-base sm:px-8 sm:py-4 sm:text-lg">Mua sắm ngay</SpecularButton>
               </Link>
-              <Link
-                to="/foods"
+              <button
+                type="button"
+                onClick={() =>
+                  document.getElementById("collections")?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="font-display font-bold text-ink/70 underline decoration-coral decoration-2 underline-offset-8 transition hover:text-coral"
               >
                 Xem bộ sưu tập →
-              </Link>
+              </button>
             </div>
 
-            <div className="mt-11 flex flex-wrap gap-3">
+            <div className="mt-10 flex flex-wrap gap-2 sm:mt-11 sm:gap-3">
               {["🚚 Giao trong 24h", "🔄 Đổi trả 30 ngày", "🛡️ An toàn cho bé"].map((chip) => (
                 <span
                   key={chip}
@@ -101,7 +103,7 @@ function Hero() {
                 className="w-full rounded-[2rem] object-cover shadow-lift ring-8 ring-white/70"
               />
             </TiltedCard>
-            <div className="absolute -bottom-7 right-4 rounded-2xl border border-white/70 bg-white/95 px-5 py-3 shadow-lift backdrop-blur">
+            <div className="absolute -bottom-7 right-4 rounded-3xl border border-white/70 bg-white/95 px-5 py-3 shadow-lift backdrop-blur">
               <p className="font-display text-2xl font-bold text-coral">
                 <Counter end={10000} suffix="+" />
               </p>
@@ -109,7 +111,7 @@ function Hero() {
             </div>
           </div>
         </div>
-      </Aurora>
+      </div>
     </section>
   );
 }

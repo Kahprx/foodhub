@@ -39,7 +39,7 @@ function Reports() {
         </p>
       </div>
 
-      <div className="mb-8 flex items-center gap-4 rounded-2xl bg-white p-5 shadow-md">
+      <div className="mb-8 flex items-center gap-4 rounded-3xl bg-white p-5 shadow-md">
         <label className="font-semibold text-gray-600">Số ngày gần nhất:</label>
         <select
           value={days}
@@ -53,7 +53,7 @@ function Reports() {
       </div>
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white p-8 shadow-md">
+        <div className="rounded-3xl bg-white p-8 shadow-md">
           <div className="mb-6 flex items-center gap-3">
             <FaChartLine className="text-2xl text-coral" />
             <h2 className="text-xl font-bold">Báo cáo doanh thu</h2>
@@ -72,7 +72,7 @@ function Reports() {
           </button>
         </div>
 
-        <div className="rounded-2xl bg-white p-8 shadow-md">
+        <div className="rounded-3xl bg-white p-8 shadow-md">
           <div className="mb-6 flex items-center gap-3">
             <FaFilePdf className="text-2xl text-red-500" />
             <h2 className="text-xl font-bold">Báo cáo tổng quan</h2>

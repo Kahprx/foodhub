@@ -236,7 +236,7 @@ function Foods() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-[680px] overflow-y-auto rounded-2xl bg-white p-8">
+          <div className="max-h-[90vh] w-[680px] overflow-y-auto rounded-3xl bg-white p-8">
             <h2 className="mb-6 text-2xl font-bold">
               {editingFood ? "Sửa sản phẩm" : "Thêm sản phẩm"}
             </h2>
@@ -248,7 +248,7 @@ function Foods() {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                className={`w-full rounded-lg border p-3 ${errors.name ? "border-red-500" : ""}`}
+                className={`w-full rounded-xl border p-3 ${errors.name ? "border-red-500" : ""}`}
               />
               {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
             </div>
@@ -261,7 +261,7 @@ function Foods() {
                   name="price"
                   value={form.price}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border p-3 ${errors.price ? "border-red-500" : ""}`}
+                  className={`w-full rounded-xl border p-3 ${errors.price ? "border-red-500" : ""}`}
                 />
                 {errors.price && <p className="mt-1 text-sm text-red-500">{errors.price}</p>}
               </div>
@@ -272,7 +272,7 @@ function Foods() {
                   name="discountPrice"
                   value={form.discountPrice}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                   placeholder="Để trống nếu không KM"
                 />
               </div>
@@ -285,7 +285,7 @@ function Foods() {
                   name="category"
                   value={form.category}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border p-3 ${errors.category ? "border-red-500" : ""}`}
+                  className={`w-full rounded-xl border p-3 ${errors.category ? "border-red-500" : ""}`}
                 >
                   <option value="">Chọn danh mục</option>
                   {categories.map((c) => (
@@ -300,7 +300,7 @@ function Foods() {
                   name="brand"
                   value={form.brand}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                 >
                   <option value="">Không có</option>
                   {brands.map((b) => (
@@ -316,7 +316,7 @@ function Foods() {
                 name="restaurant"
                 value={form.restaurant}
                 onChange={handleChange}
-                className={`w-full rounded-lg border p-3 ${errors.restaurant ? "border-red-500" : ""}`}
+                className={`w-full rounded-xl border p-3 ${errors.restaurant ? "border-red-500" : ""}`}
               >
                 <option value="">Chọn cửa hàng</option>
                 {restaurants.map((r) => (
@@ -334,7 +334,7 @@ function Foods() {
                   name="stock"
                   value={form.stock}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                   min="0"
                 />
               </div>
@@ -345,7 +345,7 @@ function Foods() {
                   name="image"
                   value={form.image}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                   placeholder="https://..."
                 />
               </div>
@@ -368,7 +368,7 @@ function Foods() {
                 rows={4}
                 value={form.description}
                 onChange={handleChange}
-                className="w-full rounded-lg border p-3"
+                className="w-full rounded-xl border p-3"
               />
             </div>
 
@@ -396,14 +396,14 @@ function Foods() {
             <div className="flex justify-end gap-3">
               <button
                 onClick={handleClose}
-                className="rounded-lg border px-5 py-2 font-semibold transition hover:bg-gray-50"
+                className="rounded-xl border px-5 py-2 font-semibold transition hover:bg-gray-50"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-lg bg-blue-500 px-6 py-2 font-semibold text-white transition hover:bg-blue-600 disabled:opacity-50"
+                className="rounded-xl bg-blue-500 px-6 py-2 font-semibold text-white transition hover:bg-blue-600 disabled:opacity-50"
               >
                 {saving ? "Đang lưu..." : editingFood ? "Cập nhật" : "Lưu"}
               </button>

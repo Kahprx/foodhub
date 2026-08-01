@@ -93,7 +93,7 @@ function FoodTable({
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white">
+      <div className="overflow-x-auto rounded-3xl border bg-white">
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr className="text-left">
@@ -122,9 +122,9 @@ function FoodTable({
                 <tr key={food._id} className="border-t">
                   <td className="p-4">
                     <img
-                      src={food.image || food.images?.[0] || "https://placehold.co/100x100?text=Toy"}
+                      src={food.image || food.images?.[0] || "https://placehold.co/100x100?text=Ảnh"}
                       alt={food.name}
-                      className="h-16 w-16 rounded-lg object-cover"
+                      className="h-16 w-16 rounded-2xl object-cover"
                     />
                   </td>
                   <td className="p-4">
@@ -197,7 +197,7 @@ function FoodTable({
             <button
               disabled={page === 1}
               onClick={() => setPage(page - 1)}
-              className="rounded-lg border px-4 py-2 transition hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-xl border px-4 py-2 transition hover:bg-gray-50 disabled:opacity-50"
             >
               Trước
             </button>
@@ -207,7 +207,7 @@ function FoodTable({
             <button
               disabled={page === totalPages}
               onClick={() => setPage(page + 1)}
-              className="rounded-lg border px-4 py-2 transition hover:bg-gray-50 disabled:opacity-50"
+              className="rounded-xl border px-4 py-2 transition hover:bg-gray-50 disabled:opacity-50"
             >
               Sau
             </button>

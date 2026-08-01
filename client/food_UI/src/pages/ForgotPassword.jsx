@@ -45,7 +45,7 @@ function ForgotPassword() {
         </p>
 
         {sent ? (
-          <div className="mt-8 rounded-2xl border-2 border-teal bg-teal/10 p-6 text-center">
+          <div className="mt-8 rounded-3xl border-2 border-teal bg-teal/10 p-6 text-center">
             <p className="text-4xl">📬</p>
             <p className="mt-3 font-display font-bold text-teal">
               Đã gửi email đặt lại mật khẩu!

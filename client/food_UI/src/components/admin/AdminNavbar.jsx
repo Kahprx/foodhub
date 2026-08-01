@@ -2,10 +2,10 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 const adminLinks = [
-  { to: "/admin/dashboard", label: "Dashboard" },
-  { to: "/admin/foods", label: "Toys" },
-  { to: "/admin/orders", label: "Orders" },
-  { to: "/admin/users", label: "Users" },
+  { to: "/admin/dashboard", label: "Bảng điều khiển" },
+  { to: "/admin/foods", label: "Sản phẩm" },
+  { to: "/admin/orders", label: "Đơn hàng" },
+  { to: "/admin/users", label: "Người dùng" },
 ];
 
 function AdminNavbar() {
@@ -19,14 +19,14 @@ function AdminNavbar() {
 
   return (
     <nav className="fixed inset-x-0 top-0 z-50 px-4 pt-3 sm:px-6">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 rounded-2xl border border-black/5 bg-white/95 px-4 shadow-soft backdrop-blur-xl sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 rounded-3xl border border-black/5 bg-white/95 px-4 shadow-soft backdrop-blur-xl sm:px-6">
         <Link to="/admin/dashboard" className="flex items-center gap-2.5">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-sunny to-amber-300 text-xl shadow-card ring-1 ring-black/5">
             🧸
           </div>
           <div className="leading-none">
             <h1 className="font-display text-lg font-bold tracking-tight text-ink">HAPPYHOMES</h1>
-            <p className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-[3px] text-teal">Admin Panel</p>
+            <p className="mt-0.5 font-display text-[10px] font-bold uppercase tracking-[3px] text-teal">Bảng quản trị</p>
           </div>
         </Link>
 
@@ -56,7 +56,15 @@ function AdminNavbar() {
             </div>
             <div className="hidden text-left xl:block">
               <p className="text-sm leading-tight">{user?.fullName}</p>
-              <p className="text-[11px] text-ink/50">{user?.role}</p>
+              <p className="text-[11px] text-ink/50">
+                {user?.role === "admin"
+                  ? "Quản trị viên"
+                  : user?.role === "customer"
+                  ? "Khách hàng"
+                  : user?.role === "restaurant"
+                  ? "Nhà hàng"
+                  : user?.role}
+              </p>
             </div>
           </div>
           <button

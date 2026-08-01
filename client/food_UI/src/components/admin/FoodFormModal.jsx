@@ -5,38 +5,38 @@ export default function FoodFormModal({
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
 
-      <div className="bg-white rounded-2xl p-8 w-[600px]">
+      <div className="bg-white rounded-3xl p-8 w-[600px]">
 
         <h2 className="text-2xl font-bold mb-6">
 
-          {food ? "Edit Toy" : "Create Toy"}
+          {food ? "Sửa sản phẩm" : "Tạo sản phẩm"}
 
         </h2>
 
         <div className="space-y-4">
 
           <input
-            placeholder="Toy name"
+            placeholder="Tên sản phẩm"
             className="w-full border rounded-xl p-3"
           />
 
           <input
-            placeholder="Price"
+            placeholder="Giá"
             className="w-full border rounded-xl p-3"
           />
 
           <input
-            placeholder="Toy Category"
+            placeholder="Danh mục sản phẩm"
             className="w-full border rounded-xl p-3"
           />
 
           <input
-            placeholder="Image URL"
+            placeholder="URL hình ảnh"
             className="w-full border rounded-xl p-3"
           />
 
           <textarea
-            placeholder="Description"
+            placeholder="Mô tả"
             className="w-full border rounded-xl p-3 h-32"
           />
 
@@ -48,13 +48,13 @@ export default function FoodFormModal({
             onClick={onClose}
             className="px-5 py-2 border rounded-xl"
           >
-            Cancel
+            Hủy
           </button>
 
           <button
             className="px-5 py-2 bg-blue-500 rounded-xl text-white"
           >
-            Save
+            Lưu
           </button>
 
         </div>

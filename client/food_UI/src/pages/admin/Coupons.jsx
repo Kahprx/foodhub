@@ -156,7 +156,7 @@ function Coupons() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white">
+      <div className="overflow-x-auto rounded-3xl border bg-white">
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
@@ -182,7 +182,7 @@ function Coupons() {
               coupons.map((coupon) => (
                 <tr key={coupon._id} className="border-t">
                   <td className="p-4">
-                    <span className="rounded-lg bg-indigo-50 px-3 py-1 font-mono font-bold tracking-wider text-indigo-600">
+                    <span className="rounded-xl bg-indigo-50 px-3 py-1 font-mono font-bold tracking-wider text-indigo-600">
                       {coupon.code}
                     </span>
                     {coupon.description && (
@@ -247,7 +247,7 @@ function Coupons() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-[560px] overflow-y-auto rounded-2xl bg-white p-8">
+          <div className="max-h-[90vh] w-[560px] overflow-y-auto rounded-3xl bg-white p-8">
             <h2 className="mb-6 text-2xl font-bold">{editing ? "Sửa mã giảm giá" : "Thêm mã giảm giá"}</h2>
 
             <div className="mb-4">
@@ -257,7 +257,7 @@ function Coupons() {
                 name="code"
                 value={form.code}
                 onChange={handleChange}
-                className={`w-full rounded-lg border p-3 font-mono uppercase ${errors.code ? "border-red-500" : ""}`}
+                className={`w-full rounded-xl border p-3 font-mono uppercase ${errors.code ? "border-red-500" : ""}`}
                 placeholder="WELCOME10"
               />
               {errors.code && <p className="mt-1 text-sm text-red-500">{errors.code}</p>}
@@ -266,7 +266,7 @@ function Coupons() {
             <div className="mb-4 grid grid-cols-2 gap-4">
               <div>
                 <label className="mb-2 block font-semibold">Loại</label>
-                <select name="type" value={form.type} onChange={handleChange} className="w-full rounded-lg border p-3">
+                <select name="type" value={form.type} onChange={handleChange} className="w-full rounded-xl border p-3">
                   <option value="percent">Phần trăm (%)</option>
                   <option value="fixed">Số tiền cố định</option>
                 </select>
@@ -278,7 +278,7 @@ function Coupons() {
                   name="value"
                   value={form.value}
                   onChange={handleChange}
-                  className={`w-full rounded-lg border p-3 ${errors.value ? "border-red-500" : ""}`}
+                  className={`w-full rounded-xl border p-3 ${errors.value ? "border-red-500" : ""}`}
                 />
                 {errors.value && <p className="mt-1 text-sm text-red-500">{errors.value}</p>}
               </div>
@@ -292,7 +292,7 @@ function Coupons() {
                   name="minOrder"
                   value={form.minOrder}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                 />
               </div>
               <div>
@@ -302,7 +302,7 @@ function Coupons() {
                   name="maxDiscount"
                   value={form.maxDiscount}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                 />
               </div>
             </div>
@@ -315,7 +315,7 @@ function Coupons() {
                   name="expiresAt"
                   value={form.expiresAt}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                 />
               </div>
               <div>
@@ -325,7 +325,7 @@ function Coupons() {
                   name="usageLimit"
                   value={form.usageLimit}
                   onChange={handleChange}
-                  className="w-full rounded-lg border p-3"
+                  className="w-full rounded-xl border p-3"
                 />
               </div>
             </div>
@@ -337,7 +337,7 @@ function Coupons() {
                 name="description"
                 value={form.description}
                 onChange={handleChange}
-                className="w-full rounded-lg border p-3"
+                className="w-full rounded-xl border p-3"
               />
             </div>
 
@@ -349,13 +349,13 @@ function Coupons() {
             </div>
 
             <div className="flex justify-end gap-3">
-              <button onClick={handleClose} className="rounded-lg border px-5 py-2 font-semibold hover:bg-gray-50">
+              <button onClick={handleClose} className="rounded-xl border px-5 py-2 font-semibold hover:bg-gray-50">
                 Hủy
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-lg bg-blue-500 px-6 py-2 font-semibold text-white hover:bg-blue-600 disabled:opacity-50"
+                className="rounded-xl bg-blue-500 px-6 py-2 font-semibold text-white hover:bg-blue-600 disabled:opacity-50"
               >
                 {saving ? "Đang lưu..." : editing ? "Cập nhật" : "Lưu"}
               </button>

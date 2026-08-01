@@ -16,9 +16,9 @@ const COLORS =[
 ];
 function OrderStatusChart({ data }){
      return (
-    <div className="bg-white rounded-2xl shadow-md p-6">
+    <div className="bg-white rounded-3xl shadow-md p-6">
       <h2 className="text-xl font-bold mb-6">
-        Order Status
+        Tình trạng đơn hàng
       </h2>
 
       <ResponsiveContainer width="100%" height={320}>

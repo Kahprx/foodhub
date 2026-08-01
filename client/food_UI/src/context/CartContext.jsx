@@ -5,28 +5,45 @@ import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
+const CART_STORAGE_KEY = "cart";
+
+const saveCartToStorage = (items) => {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+};
+
+const getCartFromStorage = () => {
+  try {
+    const saved = localStorage.getItem(CART_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+};
+
 export function CartProvider({ children }) {
 const { user } = useAuth();
-const [cartItems, setCartItems] = useState([]);
+const [cartItems, setCartItems] = useState(() => getCartFromStorage());
 const [loading, setLoading] = useState(false);
 const fetchCart = async () =>{
   if (!user) {
-    setCartItems([]);
+    setCartItems(getCartFromStorage());
     return;
   }
   try {
     setLoading(true);
       const response = await api.get("/cart");
 
-        setCartItems((response.data.data?.items || []).map((item) => ({
-          _id: item.food?._id || item.food,
-          name: item.food?.name || "Unknown",
-          price: item.food?.discountPrice > 0 ? item.food?.discountPrice : item.food?.price || 0,
-          image: item.food?.image || "",
-          quantity: item.quantity,
-          stock: item.food?.stock ?? Infinity,
-          isAvailable: item.food?.isAvailable ?? true,
-        })));
+        setCartItems((response.data.data?.items || [])
+          .filter((item) => item.food)
+          .map((item) => ({
+            _id: item.food?._id || item.food,
+            name: item.food?.name || "Unknown",
+            price: item.food?.discountPrice > 0 ? item.food?.discountPrice : item.food?.price || 0,
+            image: item.food?.image || "",
+            quantity: item.quantity,
+            stock: item.food?.stock ?? Infinity,
+            isAvailable: item.food?.isAvailable ?? true,
+          })));
 
   } catch (err) {
 
@@ -39,9 +56,37 @@ const fetchCart = async () =>{
     }
 };
 useEffect(() => {
+  const syncGuestCartToServer = async () => {
+    const savedCart = getCartFromStorage();
+    if (!user || savedCart.length === 0) {
+      return;
+    }
 
+    try {
+      const results = await Promise.all(
+        savedCart.map((item) =>
+          api
+            .post("/cart", { foodId: item._id, quantity: item.quantity })
+            .then(() => true)
+            .catch(() => false)
+        )
+      );
+      if (results.every(Boolean)) {
+        localStorage.removeItem(CART_STORAGE_KEY);
+      }
+    } catch {
+      // ignore sync failure and still try to fetch cart
+    }
+  };
+
+  const init = async () => {
+    if (user) {
+      await syncGuestCartToServer();
+    }
     fetchCart();
+  };
 
+  init();
 }, [user]);
 
   const addToCart = (food, quantity) => {
@@ -146,9 +191,13 @@ useEffect(() => {
     }
 
     setCartItems([]);
-    localStorage.removeItem("cart");
+    localStorage.removeItem(CART_STORAGE_KEY);
     toast.error("Đã xóa toàn bộ giỏ hàng");
   };
+
+  useEffect(() => {
+    saveCartToStorage(cartItems);
+  }, [cartItems]);
 
   return (
     <CartContext.Provider

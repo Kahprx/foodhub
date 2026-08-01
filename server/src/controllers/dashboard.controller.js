@@ -17,6 +17,7 @@ export const getDashboardStats = async (req, res) => {
       totalUsers,
       totalOrders,
       pendingOrders,
+      cancelledOrders,
       lowStock,
       revenueAgg,
       revenueToday,
@@ -33,6 +34,7 @@ export const getDashboardStats = async (req, res) => {
       User.countDocuments({ isDeleted: { $ne: true } }),
       Order.countDocuments(),
       Order.countDocuments({ status: "Pending" }),
+      Order.countDocuments({ status: "Cancelled" }),
       Food.countDocuments({ stock: { $lte: 10 } }),
       Order.aggregate([
         { $match: { status: "Completed" } },
@@ -78,6 +80,11 @@ export const getDashboardStats = async (req, res) => {
         totalUsers,
         totalOrders,
         pendingOrders,
+        cancelledOrders,
+        cancelRate:
+          totalOrders > 0
+            ? Math.round((cancelledOrders / totalOrders) * 10000) / 100
+            : 0,
         lowStock,
         pendingReviews,
         revenue: revenueAgg[0]?.total || 0,

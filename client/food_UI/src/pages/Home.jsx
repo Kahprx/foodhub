@@ -17,9 +17,9 @@ const brands = ["LEGO", "Hasbro", "Barbie", "Hot Wheels", "Mattel", "Fisher-Pric
 function SectionTitle({ note, title, accent }) {
   return (
     <FadeContent>
-      <div className="mb-10">
+      <div className="mb-8 sm:mb-10">
         <p className="font-display text-sm font-bold uppercase tracking-widest text-teal">{note}</p>
-        <h2 className="mt-2 text-4xl font-bold">
+        <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
           {title} <span className="text-coral">{accent}</span>
         </h2>
       </div>
@@ -63,7 +63,7 @@ function CountdownTimer() {
       ].map((unit, idx) => (
         <div key={unit.label} className="flex items-center gap-2">
           {idx > 0 && <span className="text-2xl font-bold text-coral">:</span>}
-          <div className="rounded-xl bg-ink px-3 py-2 text-center shadow-card">
+          <div className="rounded-2xl bg-ink px-3 py-2 text-center shadow-card">
             <span className="font-display text-2xl font-bold text-white">{unit.value}</span>
             <span className="block text-[10px] font-bold uppercase tracking-widest text-ink/40">{unit.label}</span>
           </div>
@@ -117,28 +117,31 @@ function Home() {
   }, []);
 
   const fetchAll = async (attempt = 0) => {
-    try {
-      setError("");
-      const [featuredRes, newRes, bestRes, flashRes] = await Promise.all([
-        api.get("/foods?isFeatured=true&limit=6"),
-        api.get("/foods?sort=new&limit=6"),
-        api.get("/foods?sort=sold&limit=3"),
-        api.get("/foods?onSale=true&limit=4"),
-      ]);
-      setFeatured(featuredRes.data.data || []);
-      setNewArrivals(newRes.data.data || []);
-      setBestSellers(bestRes.data.data || []);
-      setFlashSale(flashRes.data.data || []);
-    } catch (err) {
-      console.error(err);
-      // Retry để đi qua Railway cold start (backend ngủ cần vài chục giây để wake)
-      if (attempt < 2) {
-        setTimeout(() => fetchAll(attempt + 1), 5000);
-      } else {
-        setError("Không tải được danh sách đồ chơi.");
-      }
-    } finally {
-      if (attempt >= 2) setLoading(false);
+    setError("");
+    // allSettled: 1 request lỗi không kéo cả trang treo; chỉ retry nếu TẤT CẢ đều lỗi
+    const results = await Promise.allSettled([
+      api.get("/foods?isFeatured=true&limit=6"),
+      api.get("/foods?sort=new&limit=6"),
+      api.get("/foods?sort=sold&limit=3"),
+      api.get("/foods?onSale=true&limit=4"),
+    ]);
+    const [featuredRes, newRes, bestRes, flashRes] = results;
+    if (featuredRes.status === "fulfilled") setFeatured(featuredRes.value.data.data || []);
+    if (newRes.status === "fulfilled") setNewArrivals(newRes.value.data.data || []);
+    if (bestRes.status === "fulfilled") setBestSellers(bestRes.value.data.data || []);
+    if (flashRes.status === "fulfilled") setFlashSale(flashRes.value.data.data || []);
+    const failed = results.filter((r) => r.status === "rejected");
+    if (failed.length > 0) {
+      console.error("Một số API lỗi:", failed.map((f) => f.reason?.message));
+    }
+    if (results.every((r) => r.status === "rejected") && attempt < 2) {
+      // Retry nếu backend chưa sẵn sàng (cold start)
+      setTimeout(() => fetchAll(attempt + 1), 5000);
+    } else if (results.every((r) => r.status === "rejected")) {
+      setError("Không tải được danh sách đồ chơi.");
+      setLoading(false);
+    } else {
+      setLoading(false);
     }
   };
 
@@ -168,7 +171,9 @@ function Home() {
     <>
       <Hero />
       <SearchBar />
-      <Category />
+      <div id="collections" className="scroll-mt-24">
+        <Category />
+      </div>
 
       <section className="border-y border-black/5 bg-white py-8">
         <div className="mx-auto max-w-7xl px-6">
@@ -177,19 +182,19 @@ function Home() {
       </section>
 
       {flashSale.length > 0 && (
-        <section className="relative overflow-hidden bg-gradient-to-r from-red-600 via-coral to-amber-500 py-16">
+        <section className="relative overflow-hidden bg-gradient-to-r from-red-600 via-coral to-amber-500 py-10 sm:py-16">
           <div className="bg-dots-light absolute inset-0 opacity-30" />
-          <div className="relative mx-auto max-w-7xl px-6">
-            <div className="mb-10 flex flex-wrap items-end justify-between gap-6">
+          <div className="relative mx-auto max-w-7xl px-4 sm:px-6">
+            <div className="mb-8 flex flex-wrap items-end justify-between gap-6 sm:mb-10">
               <div>
                 <p className="font-display text-sm font-bold uppercase tracking-widest text-white/80">Chớp nhoáng</p>
-                <h2 className="mt-2 text-4xl font-bold text-white">
+                <h2 className="mt-2 text-3xl font-bold text-white sm:text-4xl">
                   FLASH <span className="text-ink">SALE</span> ⚡
                 </h2>
               </div>
               <CountdownTimer />
             </div>
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8 xl:grid-cols-4">
               {flashSale.map((food) => (
                 <FoodCard
                   key={food._id}
@@ -208,7 +213,7 @@ function Home() {
         </section>
       )}
 
-      <section className="mx-auto max-w-7xl px-6 py-16">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16">
         <SectionTitle note="Được chọn nhiều" title="Đồ chơi nổi" accent="bật" />
 
         {featured.length === 0 ? (
@@ -217,7 +222,7 @@ function Home() {
             <p className="mt-3 text-ink/60">Vui lòng quay lại sau.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8 xl:grid-cols-3">
             {featured.map((food) => (
               <FoodCard
                 key={food._id}
@@ -236,10 +241,10 @@ function Home() {
       </section>
 
       {newArrivals.length > 0 && (
-        <section className="border-y border-lilac/20 bg-gradient-to-b from-lilac/10 to-transparent py-16">
-          <div className="mx-auto max-w-7xl px-6">
+        <section className="border-y border-lilac/20 bg-gradient-to-b from-lilac/10 to-transparent py-10 sm:py-16">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6">
             <SectionTitle note="Vừa cập bến" title="Hàng" accent="mới về" />
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-8 xl:grid-cols-3">
               {newArrivals.map((food) => (
                 <FoodCard
                   key={food._id}
@@ -259,9 +264,9 @@ function Home() {
       )}
 
       {bestSellers.length > 0 && (
-        <section className="mx-auto max-w-7xl px-6 py-16">
+        <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16">
           <SectionTitle note="Các bé mê nhất" title="Bán" accent="chạy nhất" />
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3 md:gap-8">
             {bestSellers.map((food, index) => (
               <div key={food._id} className={index % 2 === 1 ? "md:mt-10" : ""}>
                 <FoodCard
@@ -280,10 +285,10 @@ function Home() {
         </section>
       )}
 
-      <section className="mx-auto max-w-7xl px-6 pb-20">
+      <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 sm:pb-20">
         <FadeContent>
           <MagicBento className="overflow-hidden">
-            <div className="relative grid gap-8 p-10 md:grid-cols-2 md:items-center md:p-14">
+            <div className="relative grid gap-6 p-8 md:grid-cols-2 md:items-center md:gap-8 md:p-14">
               <div className="bg-dots-light absolute inset-0 opacity-40" />
               <div className="relative">
                 <p className="font-display text-sm font-bold uppercase tracking-widest text-teal">Ưu đãi hội viên</p>

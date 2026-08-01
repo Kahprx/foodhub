@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
+import ThemeToggle from "../ThemeToggle";
 
 const menus = [
   { name: "Home", path: "/" },
@@ -37,7 +38,7 @@ function MobileDrawer({ open, onClose }) {
                 to={item.path}
                 onClick={onClose}
                 className={({ isActive }) =>
-                  `block rounded-xl px-4 py-3 font-display font-bold transition-all ${
+                  `block rounded-2xl px-4 py-3 font-display font-bold transition-all ${
                     isActive
                       ? "bg-white text-ink shadow-card"
                       : "text-ink/70 hover:bg-sunny/40"
@@ -49,6 +50,11 @@ function MobileDrawer({ open, onClose }) {
             </li>
           ))}
         </ul>
+
+        <div className="flex items-center justify-between border-t border-black/5 px-6 py-5">
+          <span className="font-display font-bold text-ink-soft">Giao diện</span>
+          <ThemeToggle />
+        </div>
       </div>
     </>
   );

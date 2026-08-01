@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import LineSidebar from "../bits/LineSidebar";
 
 const menu = [
-  { to: "/admin/dashboard", label: "Dashboard" },
+  { to: "/admin/dashboard", label: "Bảng điều khiển" },
   { to: "/admin/foods", label: "Sản phẩm" },
   { to: "/admin/orders", label: "Đơn hàng" },
   { to: "/admin/users", label: "Người dùng" },
@@ -16,7 +16,7 @@ const menu = [
   { to: "/admin/settings", label: "Cài đặt" },
 ];
 
-function AdminSidebar() {
+function AdminSidebar({ open = false, onClose }) {
   const { logout } = useAuth();
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -25,16 +25,29 @@ function AdminSidebar() {
 
   const handleItemClick = (index) => {
     navigate(menu[index]?.to);
+    onClose?.();
   };
 
   const handleLogout = () => {
     logout();
     navigate("/");
+    onClose?.();
   };
 
   return (
-    <aside className="min-h-screen w-64 bg-gradient-to-b from-slate-900 to-blue-950 p-6 text-white">
-      <h2 className="mb-6 text-2xl font-bold">🧸 HAPPYHOMES Admin</h2>
+    <>
+      <div
+        onClick={onClose}
+        className={`fixed inset-0 z-40 bg-black/50 transition-opacity duration-300 md:hidden ${
+          open ? "visible opacity-100" : "invisible opacity-0"
+        }`}
+      />
+      <aside
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform overflow-y-auto bg-gradient-to-b from-slate-900 to-blue-950 p-6 text-white shadow-2xl transition-transform duration-300 md:static md:z-auto md:translate-x-0 md:shadow-none ${
+          open ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <h2 className="mb-6 text-2xl font-bold">🧸 Bảng quản trị HAPPYHOMES</h2>
 
       <LineSidebar
         items={menu.map((item) => item.label)}
@@ -66,7 +79,8 @@ function AdminSidebar() {
           🚪 Đăng xuất
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
 

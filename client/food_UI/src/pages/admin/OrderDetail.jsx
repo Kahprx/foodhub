@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import api from "../../services/api";
+import OrderTimeline from "../../components/admin/OrderTimeline";
 
 const statusColors = {
   Pending: "bg-yellow-100 text-yellow-700",
@@ -10,6 +11,23 @@ const statusColors = {
   Delivering: "bg-indigo-100 text-indigo-700",
   Completed: "bg-green-100 text-green-700",
   Cancelled: "bg-red-100 text-red-700",
+};
+
+const statusLabels = {
+  Pending: "Chờ xác nhận",
+  Confirmed: "Đã xác nhận",
+  Preparing: "Đang chuẩn bị",
+  Delivering: "Đang giao hàng",
+  Completed: "Hoàn thành",
+  Cancelled: "Đã hủy",
+};
+
+const paymentMethodLabels = {
+  COD: "Thanh toán khi nhận hàng",
+  Momo: "MoMo",
+  VNPay: "VNPay",
+  Stripe: "Stripe",
+  Banking: "Ngân hàng",
 };
 
 const shippingProviders = ["SPX", "GHN", "ViettelPost"];
@@ -42,7 +60,7 @@ function OrderDetail() {
       })
       .catch((err) =>
         setError(
-          err.response?.data?.message || "Failed to load order"
+          err.response?.data?.message || "Không tải được đơn hàng"
         )
       )
       .finally(() => setLoading(false));
@@ -61,22 +79,10 @@ function OrderDetail() {
     }
   };
 
-  useEffect(() => {
-    api
-      .get(`/orders/${id}`)
-      .then((res) => setOrder(res.data.data))
-      .catch((err) =>
-        setError(
-          err.response?.data?.message || "Failed to load order"
-        )
-      )
-      .finally(() => setLoading(false));
-  }, [id]);
-
   if (loading) {
     return (
       <div className="p-8">
-        <p className="text-lg font-medium">Loading...</p>
+        <p className="text-lg font-medium">Đang tải...</p>
       </div>
     );
   }
@@ -84,12 +90,12 @@ function OrderDetail() {
   if (error || !order) {
     return (
       <div className="p-8">
-        <p className="text-red-500">{error || "Order not found"}</p>
+        <p className="text-red-500">{error || "Không tìm thấy đơn hàng"}</p>
         <button
           onClick={() => navigate("/admin/orders")}
           className="mt-4 text-blue-600 hover:underline"
         >
-          ← Back to Orders
+          ← Quay lại đơn hàng
         </button>
       </div>
     );
@@ -104,12 +110,12 @@ function OrderDetail() {
         onClick={() => navigate("/admin/orders")}
         className="mb-6 text-blue-600 hover:underline font-semibold"
       >
-        ← Back to Orders
+        ← Quay lại đơn hàng
       </button>
 
       <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
         <h1 className="text-3xl font-bold">
-          Order Detail
+          Chi tiết đơn hàng
         </h1>
 
         <span
@@ -118,24 +124,25 @@ function OrderDetail() {
             "bg-gray-100 text-gray-700"
           }`}
         >
-          {order.status}
+          {statusLabels[order.status] || order.status}
         </span>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow p-6">
-          <h2 className="text-xl font-bold mb-4">
-            Items
-          </h2>
+        <div className="lg:col-span-2 space-y-6">
+          <div className="bg-white rounded-3xl shadow p-6">
+            <h2 className="text-xl font-bold mb-4">
+              Sản phẩm
+            </h2>
 
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-100">
                 <tr className="text-left">
-                  <th className="p-3">Toy</th>
-                  <th className="p-3">Price</th>
-                  <th className="p-3">Qty</th>
-                  <th className="p-3 text-right">Subtotal</th>
+                  <th className="p-3">Sản phẩm</th>
+                  <th className="p-3">Giá</th>
+                  <th className="p-3">Số lượng</th>
+                  <th className="p-3 text-right">Tạm tính</th>
                 </tr>
               </thead>
 
@@ -164,12 +171,51 @@ function OrderDetail() {
               {order.totalPrice?.toLocaleString()}đ
             </span>
           </div>
+          </div>
+
+          <OrderTimeline order={order} />
         </div>
 
-        <div className="bg-white rounded-2xl shadow p-6 h-fit">
-          <h2 className="text-xl font-bold mb-4">
-            Order Info
-          </h2>
+        <div className="bg-white rounded-3xl shadow p-6 h-fit">
+          <h2 className="text-xl font-bold mb-4">Thông tin đơn hàng</h2>
+
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="text-gray-500">Mã đơn hàng</p>
+              <p className="font-semibold break-all">{order._id}</p>
+            </div>
+
+            <div>
+              <p className="text-gray-500">Khách hàng</p>
+              <p className="font-semibold">{customerName}</p>
+            </div>
+
+            <div>
+              <p className="text-gray-500">Cửa hàng</p>
+              <p className="font-semibold">
+                {order.restaurant?.name || "Không xác định"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-500">Thanh toán</p>
+              <p className="font-semibold">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</p>
+            </div>
+
+            <div>
+              <p className="text-gray-500">Địa chỉ giao hàng</p>
+              <p className="font-semibold">
+                {order.deliveryAddress || "Không xác định"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-gray-500">Ngày tạo</p>
+              <p className="font-semibold">
+                {new Date(order.createdAt).toLocaleDateString("vi-VN")} {new Date(order.createdAt).toLocaleTimeString("vi-VN")}
+              </p>
+            </div>
+          </div>
 
           <div className="mt-6 rounded-2xl border-2 border-teal/30 bg-teal/5 p-4">
             <h3 className="mb-3 font-bold">🚚 Cập nhật vận chuyển</h3>
@@ -179,7 +225,7 @@ function OrderDetail() {
                 <select
                   value={shipping.shippingProvider}
                   onChange={(e) => setShipping({ ...shipping, shippingProvider: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
                 >
                   <option value="">Chọn đơn vị</option>
                   {shippingProviders.map((p) => (
@@ -193,7 +239,7 @@ function OrderDetail() {
                   value={shipping.trackingNumber}
                   onChange={(e) => setShipping({ ...shipping, trackingNumber: e.target.value })}
                   placeholder="VD: VN1234567890"
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -202,7 +248,7 @@ function OrderDetail() {
                   value={shipping.shipmentStatus}
                   onChange={(e) => setShipping({ ...shipping, shipmentStatus: e.target.value })}
                   placeholder="VD: Đang tại kho trung chuyển"
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
                 />
               </div>
               <div>
@@ -211,54 +257,16 @@ function OrderDetail() {
                   type="date"
                   value={shipping.eta}
                   onChange={(e) => setShipping({ ...shipping, eta: e.target.value })}
-                  className="w-full rounded-lg border px-3 py-2 text-sm"
+                  className="w-full rounded-xl border px-3 py-2 text-sm"
                 />
               </div>
               <button
                 onClick={handleSaveShipping}
                 disabled={savingShipping}
-                className="w-full rounded-lg bg-teal px-3 py-2 font-bold text-white transition hover:bg-teal/90 disabled:opacity-40"
+                className="w-full rounded-xl bg-teal px-3 py-2 font-bold text-white transition hover:bg-teal/90 disabled:opacity-40"
               >
                 {savingShipping ? "Đang lưu..." : "Lưu thông tin vận chuyển"}
               </button>
-            </div>
-          </div>
-
-          <div className="space-y-3 text-sm">
-            <div>
-              <p className="text-gray-500">Order ID</p>
-              <p className="font-semibold break-all">{order._id}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Customer</p>
-              <p className="font-semibold">{customerName}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Restaurant</p>
-              <p className="font-semibold">
-                {order.restaurant?.name || "Không xác định"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Payment</p>
-              <p className="font-semibold">{order.paymentMethod}</p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Delivery Address</p>
-              <p className="font-semibold">
-                {order.deliveryAddress || "Không xác định"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-gray-500">Created</p>
-              <p className="font-semibold">
-                {new Date(order.createdAt).toLocaleString("vi-VN")}
-              </p>
             </div>
           </div>
         </div>

@@ -6,11 +6,11 @@ function StatCard({ title, value, icon, color, suffix = "", sub = "" }) {
 
   return (
     <BorderGlow
-      className="rounded-2xl"
+      className="rounded-3xl"
       gradient="from-coral via-sunny to-teal"
-      innerClassName="relative rounded-2xl"
+      innerClassName="relative rounded-3xl"
     >
-      <div className="rounded-2xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+      <div className="rounded-3xl bg-white p-6 shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
         <div className="flex items-center justify-between">
           <div>
             <p className="text-gray-500">{title}</p>

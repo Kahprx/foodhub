@@ -99,14 +99,15 @@ See `server/.env.example`. Key groups:
 
 ### Current stack (Railway — deployed & verified)
 
-Current live stack (project `marvelous-creation`, env `production`):
+**Single service** (project `marvelous-creation`, env `production`): the backend Express app serves
+both the API and the built SPA (`client/food_UI/dist`). No separate frontend service, no proxy hop.
 
 | Resource | URL |
 |----------|-----|
-| Client (SPA + proxy) | https://foodhub-client-production.up.railway.app |
-| Backend API (direct) | https://marvelous-creation-production-5d43.up.railway.app |
-| API health | https://foodhub-client-production.up.railway.app/api/v1/health |
+| App (SPA + API, same origin) | https://marvelous-creation-production-5d43.up.railway.app |
+| API health | https://marvelous-creation-production-5d43.up.railway.app/api/v1/health |
 | Swagger docs | https://marvelous-creation-production-5d43.up.railway.app/api-docs |
+| MongoDB (Railway, internal) | `mongodb.railway.internal` |
 
 **Cold start:** none. `Serverless`/App-Sleeping is disabled on all services (`sleepApplication = false`),
 so services run continuously. The backend also keeps an active MongoDB connection, which prevents
@@ -119,47 +120,46 @@ sleep even if Serverless were enabled. No keep-alive pinger is required.
 
 - Workspace is on the **Trial plan with a one-time $5 credit (19 days left as of 2026-08-01)**.
   When the trial ends, deployments stop unless you upgrade.
-- Current usage ≈ **$0.64 / 12 days (~$1.6/month)** across client + backend + MongoDB.
-- After the trial: **Hobby ($5/month)** comfortably covers this, or migrate to a fully-free host
-  (e.g. Cloudflare Pages for the static client + a Cloudflare Worker / Oracle free VM for the API).
-- Optional (free) alerting: add 2 UptimeRobot monitors (HTTP(s), 5 min) — not needed for keep-alive,
+- Current usage ≈ **$0.64 / 12 days (~$1.6/month)** — MongoDB is ~80% of the cost. The app is a
+  single service now, so after the trial the **Free plan ($1 credit/month, no credit card)** covers
+  roughly 3 of every 4 weeks; the rest of the month Railway pauses the services automatically and
+  resumes them next cycle. Data is never lost.
+- Fully-free options for the future: **Oracle Cloud Always-Free VM** (needs a card once to verify,
+  then free forever — see `deploy/oracle/`), or pay **Hobby ($5/month)** for 100% uptime.
+- Optional (free) alerting: add an UptimeRobot monitor (HTTP(s), 5 min) — not needed for keep-alive,
   only if you want down-notifications.
 
-### Environment variables (currently set on Railway backend)
+### Environment variables (currently set on Railway)
 
-`MONGODB_URI` (Railway MongoDB, internal), `JWT_SECRET`, `JWT_REFRESH_SECRET`, `JWT_EXPIRES_IN=7d`,
-`CLIENT_URL=https://foodhub-client-production.up.railway.app`, `SMTP_HOST/PORT/SECURE/USER/PASS` (Gmail —
-SMTP is unreachable from Railway, so forgot-password safely falls back to returning the reset link).
-
-Client service env: `BACKEND_URL=https://marvelous-creation-production-5d43.up.railway.app`.
+Backend: `MONGODB_URI` (Railway MongoDB, internal), `JWT_SECRET`, `JWT_REFRESH_SECRET`,
+`JWT_EXPIRES_IN=7d`, `CLIENT_URL=https://marvelous-creation-production-5d43.up.railway.app`,
+`SMTP_HOST/PORT/SECURE/USER/PASS` (Gmail — SMTP is unreachable from Railway, so forgot-password
+safely falls back to returning the reset link).
 
 ### Redeploy after code change
 
 ```bash
-railway up server --path-as-root -s marvelous-creation -e production
-railway up client/food_UI --path-as-root -s foodhub-client -e production
+railway up . --path-as-root -s marvelous-creation -e production
 ```
 
-`.github/workflows/smoke-test.yml` pings client + backend on every push and daily, so a broken
+`.github/workflows/smoke-test.yml` pings the app + API on every push and daily, so a broken
 deploy shows a red check on the latest commit.
 
 ## Deploy on Railway (from scratch)
 
-Two services, one repo:
+One service, one repo (monorepo, deploy from repo root):
 
-**1. Backend (`server/`)**
-- Root Directory: `server/`
-- Start command: `npm start` (auto via `server/railway.json`)
-- Required env vars: `PORT` (auto), `MONGODB_URI` (Railway MongoDB or Atlas), `JWT_SECRET`, `JWT_REFRESH_SECRET`, `CLIENT_URL` (your frontend URL)
+**Single service**
+- Root Directory: `./` (repo root, auto via root `railway.json` — Nixpacks)
+- Build: `npm run build` (installs backend + frontend deps, then `vite build` into `client/food_UI/dist`)
+- Start: `npm start` (runs the Express backend, which also serves the built SPA)
+- Required env vars: `PORT` (auto), `MONGODB_URI`, `JWT_SECRET`, `JWT_REFRESH_SECRET`, `CLIENT_URL` (your app URL)
 - Optional: `SMTP_*`, `CLOUDINARY_*`, `VNPAY_*`, `MOMO_*`, `STRIPE_*`
 
-**2. Frontend (`client/food_UI/`)**
-- Root Directory: `client/food_UI/`
-- Build: `npm run build`, Start: `npm start` (Express static server, auto via `client/food_UI/railway.json`)
-- Env var: `BACKEND_URL` = your backend Railway URL (e.g. `https://foodhub-server-production.up.railway.app`)
-- The Express server serves the built SPA and proxies `/api/*` to `BACKEND_URL` — no build-time `VITE_API_URL` needed.
-- Optional: set `VITE_API_URL` at build time to override the API base directly.
-
+> For local development the two services are still separate: `npm run dev --prefix server` (API on
+> :5000) + `npm run dev --prefix client/food_UI` (Vite on :5173, proxies `/api` to :5000). The client's
+> standalone `server.js` + `client/food_UI/railway.json` only matter if you ever split them again.
+>
 > Image uploads: with `CLOUDINARY_*` set, files upload to Cloudinary; otherwise they are stored as base64 data URLs (fine for small files, not recommended for production).
 
 ## Project Structure

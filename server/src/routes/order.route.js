@@ -11,6 +11,7 @@ import {
   getRevenueChart,
   getOrderStatus,
   getRecentOrders,
+  getHourlyOrders,
   checkCoupon,
   exportOrdersExcel,
   exportOrderPdf,
@@ -25,6 +26,8 @@ router.get("/revenue", protect, getRevenue);
 router.get("/revenue/chart", protect, getRevenueChart);
 
 router.get("/status/chart", protect, adminOnly, getOrderStatus);
+
+router.get("/hourly-chart", protect, adminOnly, getHourlyOrders);
 
 router.get("/all", protect, adminOnly, getAllOrders);
 

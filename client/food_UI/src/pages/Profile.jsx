@@ -45,7 +45,7 @@ function Profile() {
         birthday: form.birthday || undefined,
         addresses,
       });
-      login(response.data.data, localStorage.getItem("token"), localStorage.getItem("refreshToken"));
+      login(response.data.data, sessionStorage.getItem("token"), sessionStorage.getItem("refreshToken"));
       setSaved(true);
       toast.success("Đã cập nhật hồ sơ.");
     } catch (err) {
@@ -181,7 +181,7 @@ function Profile() {
             ) : (
               <div className="space-y-3">
                 {addresses.map((address, index) => (
-                  <div key={`${address}-${index}`} className="flex items-center justify-between gap-4 rounded-2xl border border-gray-100 p-4">
+                  <div key={`${address}-${index}`} className="flex items-center justify-between gap-4 rounded-3xl border border-gray-100 p-4">
                     <div className="flex items-start gap-3">
                       <FaMapMarkerAlt className="mt-1 text-coral" />
                       <p className="font-semibold">{address}</p>

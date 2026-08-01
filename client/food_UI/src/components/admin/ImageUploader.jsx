@@ -70,7 +70,7 @@ function ImageUploader({
           type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="rounded-lg border-2 border-dashed border-blue-300 px-4 py-2 font-semibold text-blue-500 transition hover:bg-blue-50 disabled:opacity-50"
+          className="rounded-xl border-2 border-dashed border-blue-300 px-4 py-2 font-semibold text-blue-500 transition hover:bg-blue-50 disabled:opacity-50"
         >
           {uploading ? "Đang tải lên..." : multiple ? "📁 Tải ảnh lên (nhiều)" : "📁 Tải ảnh lên"}
         </button>
@@ -90,7 +90,7 @@ function ImageUploader({
           value={value || ""}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Hoặc dán URL hình ảnh..."
-          className="mt-3 w-full rounded-lg border p-3"
+          className="mt-3 w-full rounded-xl border p-3"
         />
       )}
 
@@ -98,7 +98,7 @@ function ImageUploader({
         <div className="mt-3 flex flex-wrap gap-3">
           {images.map((img, idx) => (
             <div key={`${img}-${idx}`} className="relative">
-              <img src={img} alt="" className="h-20 w-20 rounded-lg object-cover" />
+              <img src={img} alt="" className="h-20 w-20 rounded-xl object-cover" />
               <button
                 type="button"
                 onClick={() => {

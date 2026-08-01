@@ -5,15 +5,15 @@ export default function DeleteFoodModal({
   return (
     <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
 
-      <div className="bg-white rounded-2xl p-8 w-[420px]">
+      <div className="bg-white rounded-3xl p-8 w-[420px]">
 
         <h2 className="text-xl font-bold">
-          Delete Toy
+          Xóa sản phẩm
         </h2>
 
         <p className="mt-5">
 
-          Delete <b>{food?.name}</b> ?
+          Xóa <b>{food?.name}</b> ?
 
         </p>
 
@@ -23,13 +23,13 @@ export default function DeleteFoodModal({
             onClick={onClose}
             className="px-5 py-2 border rounded-xl"
           >
-            Cancel
+            Hủy
           </button>
 
           <button
             className="px-5 py-2 bg-red-500 rounded-xl text-white"
           >
-            Delete
+            Xóa
           </button>
 
         </div>

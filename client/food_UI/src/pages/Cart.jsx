@@ -123,7 +123,7 @@ function Cart() {
             sm:w-auto
             px-5
             py-3
-            rounded-xl
+            rounded-2xl
             bg-red-50
             text-red-500
             border
@@ -194,7 +194,7 @@ function Cart() {
                   sm:w-36
                   h-52
                   sm:h-36
-                  rounded-2xl
+                  rounded-3xl
                   object-cover
                 "
               />
@@ -228,7 +228,7 @@ function Cart() {
                     className="
                       w-9
                       h-9
-                      rounded-lg
+                      rounded-xl
                       bg-gray-100
                       hover:bg-gray-200
                       transition
@@ -252,7 +252,7 @@ function Cart() {
                       className="
                       w-9
                       h-9
-                      rounded-lg
+                      rounded-xl
                       bg-coral
                       hover:bg-coral/90
                       text-white
@@ -282,7 +282,7 @@ function Cart() {
   gap-2
   px-5
   py-3
-  rounded-xl
+  rounded-2xl
   bg-red-50
   text-red-500
   border
@@ -460,7 +460,7 @@ function Cart() {
         mt-8
         w-full
         py-4
-        rounded-2xl
+        rounded-3xl
         bg-teal
         text-white
         text-center

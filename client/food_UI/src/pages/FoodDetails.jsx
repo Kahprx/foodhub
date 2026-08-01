@@ -199,7 +199,7 @@ function FoodDetail() {
               {reviews.length} đánh giá · Trung bình {average}/5
             </p>
           </div>
-          <div className="rounded-2xl bg-sunny/30 px-5 py-3 text-2xl font-extrabold text-coral">
+          <div className="rounded-3xl bg-sunny/30 px-5 py-3 text-2xl font-extrabold text-coral">
             {average} <FaStar className="inline text-lg" />
           </div>
         </div>

@@ -36,7 +36,7 @@ function FoodSkeleton() {
 
           </div>
 
-          <div className="h-14 w-52 mt-12 rounded-xl bg-gray-200 animate-pulse" />
+          <div className="h-14 w-52 mt-12 rounded-2xl bg-gray-200 animate-pulse" />
 
         </div>
 

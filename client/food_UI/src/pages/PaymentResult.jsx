@@ -45,13 +45,13 @@ function PaymentResult() {
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link
             to="/orders"
-            className="inline-block rounded-2xl bg-teal px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-soft"
+            className="inline-block rounded-3xl bg-teal px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-soft"
           >
             Xem đơn hàng
           </Link>
           <Link
             to="/menu"
-            className="inline-block rounded-2xl bg-coral px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-soft"
+            className="inline-block rounded-3xl bg-coral px-8 py-4 font-bold text-white transition hover:-translate-y-0.5 hover:shadow-soft"
           >
             Tiếp tục mua sắm
           </Link>

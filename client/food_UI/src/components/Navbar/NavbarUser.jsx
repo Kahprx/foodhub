@@ -52,7 +52,7 @@ function NavbarUser() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-14 z-50 w-64 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-lift"
+          className="absolute right-0 top-14 z-50 w-64 overflow-hidden rounded-3xl border border-black/5 bg-white shadow-lift"
         >
           <div className="border-b border-black/5 bg-sunny/20 p-5">
             <h3 className="font-display font-bold">{user.fullName}</h3>

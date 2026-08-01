@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -6,6 +7,7 @@ import MainLayout from "./layouts/MainLayout";
 import Navbar from "./components/Navbar";
 import AdminNavbar from "./components/admin/AdminNavbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import BackToTop from "./components/BackToTop";
 import { useAuth } from "./context/AuthContext";
 
 // Client Pages
@@ -43,11 +45,26 @@ import AdminReports from "./pages/admin/Reports";
 import AdminSettings from "./pages/admin/Settings";
 
 function Root() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
 
   const isAdmin = user?.role === "admin";
   const isAdminArea = pathname.startsWith("/admin");
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="text-center">
+          <div className="text-5xl">🧸</div>
+          <p className="mt-4 text-lg font-bold text-gray-500">Đang tải...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -59,6 +76,8 @@ function Root() {
           <Route path="/" element={<Home />} />
 
           <Route path="/menu" element={<Menu />} />
+
+          <Route path="/foods" element={<Menu />} />
 
           <Route path="/foods/:id" element={<FoodDetail />} />
 
@@ -123,7 +142,7 @@ function Root() {
         <Route
           path="/admin"
           element={
-            <ProtectedRoute>
+            <ProtectedRoute role="admin">
               <AdminLayout showHeader />
             </ProtectedRoute>
           }
@@ -142,6 +161,8 @@ function Root() {
           <Route path="settings" element={<AdminSettings />} />
         </Route>
       </Routes>
+
+      <BackToTop />
 
       <ToastContainer
         position="top-right"

@@ -6,6 +6,8 @@ import StockLog from "../models/StockLog.js";
 import Notification from "../models/Notification.js";
 import mongoose from "mongoose";
 import { sendOrderStatusEmail } from "./email.service.js";
+import { emitToAdmins } from "./socket.service.js";
+import { mergeAndDedupeCarts } from "./cart.service.js";
 
 const VALID_STATUS = [
   "Pending",
@@ -69,6 +71,9 @@ export const createOrderService = async (
     ? options.shippingProvider
     : "SPX";
   const shippingFee = SHIPPING_FEES[provider];
+
+  // Gom các cart trùng lặp (nếu có) để tránh đọc nhầm cart rỗng -> "Giỏ hàng trống"
+  await mergeAndDedupeCarts(userId);
 
   const cart = await Cart.findOne({ user: userId }).populate("items.food");
 
@@ -171,6 +176,35 @@ export const createOrderService = async (
       link: `/admin/orders`,
       isGlobal: true,
     });
+    emitToAdmins("order:new", {
+      orderId: order._id.toString(),
+      shortId: order._id.toString().slice(-6),
+      totalPrice: order.totalPrice,
+      status: order.status,
+    });
+  } catch {
+    // không chặn việc tạo đơn
+  }
+
+  // Cảnh báo hàng sắp hết ngay khi đặt
+  try {
+    for (const item of items) {
+      const food = await Food.findById(item.food).select("name stock");
+      if (food && food.stock <= 5) {
+        await Notification.create({
+          type: "stock",
+          title: "Hàng sắp hết",
+          message: `"${food.name}" chỉ còn ${food.stock} sản phẩm`,
+          link: `/admin/foods`,
+          isGlobal: true,
+        });
+        emitToAdmins("stock:low", {
+          foodId: food._id.toString(),
+          name: food.name,
+          stock: food.stock,
+        });
+      }
+    }
   } catch {
     // không chặn việc tạo đơn
   }
@@ -246,6 +280,11 @@ export const updateOrderStatusService = async (orderId, status, byUserId = null,
       link: `/admin/orders/${orderId}`,
       isGlobal: true,
     });
+    emitToAdmins("order:status", {
+      orderId: orderId.toString(),
+      shortId: orderId.toString().slice(-6),
+      status,
+    });
   } catch {
     // không chặn
   }
@@ -291,6 +330,16 @@ export const cancelOrderService = async (orderId, userId = null) => {
     by: userId,
   });
   await order.save();
+
+  try {
+    emitToAdmins("order:status", {
+      orderId: orderId.toString(),
+      shortId: orderId.toString().slice(-6),
+      status: "Cancelled",
+    });
+  } catch {
+    // không chặn
+  }
 
   // Hoàn stock
   await Promise.all(
@@ -402,4 +451,35 @@ export const getRecentOrdersService = async () => {
     .populate("user", "fullName")
     .sort({ createdAt: -1 })
     .limit(5);
+};
+
+export const getHourlyOrdersService = async () => {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const buckets = await Order.aggregate([
+    { $match: { createdAt: { $gte: start } } },
+    {
+      $group: {
+        _id: { hour: { $hour: "$createdAt" } },
+        orders: { $sum: 1 },
+        revenue: {
+          $sum: { $cond: [{ $eq: ["$status", "Completed"] }, "$totalPrice", 0] },
+        },
+      },
+    },
+  ]);
+
+  const byHour = new Map(buckets.map((b) => [b._id.hour, b]));
+  const result = [];
+  for (let h = 0; h < 24; h++) {
+    const b = byHour.get(h);
+    result.push({
+      hour: h,
+      label: `${String(h).padStart(2, "0")}:00`,
+      orders: b?.orders || 0,
+      revenue: b?.revenue || 0,
+    });
+  }
+  return result;
 };

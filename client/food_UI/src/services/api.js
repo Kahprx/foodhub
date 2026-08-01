@@ -5,10 +5,11 @@ const api = axios.create({
       import.meta.env.VITE_API_URL ||
       (import.meta.env.PROD ? "/api/v1" : "http://localhost:5000/api/v1"),
     headers: { "Content-Type": "application/json" },
+    timeout: 15000,
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -52,12 +53,12 @@ api.interceptors.response.use(
       originalRequest._retry = true;
       isRefreshing = true;
 
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = sessionStorage.getItem("refreshToken");
 
       if (!refreshToken) {
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("refreshToken");
         window.location.href = "/login";
         return Promise.reject(error);
       }
@@ -68,8 +69,8 @@ api.interceptors.response.use(
           { refreshToken }
         );
 
-        localStorage.setItem("token", data.data.accessToken);
-        localStorage.setItem("refreshToken", data.data.refreshToken);
+        sessionStorage.setItem("token", data.data.accessToken);
+        sessionStorage.setItem("refreshToken", data.data.refreshToken);
 
         processQueue(null, data.data.accessToken);
 
@@ -77,9 +78,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError, null);
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("refreshToken");
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("user");
+        sessionStorage.removeItem("refreshToken");
         window.location.href = "/login";
         return Promise.reject(refreshError);
       } finally {

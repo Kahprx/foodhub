@@ -8,6 +8,12 @@ const roleColors = {
   restaurant: "bg-blue-100 text-blue-600",
 };
 
+const roleNames = {
+  admin: "Quản trị viên",
+  customer: "Khách hàng",
+  restaurant: "Nhà hàng",
+};
+
 function Users() {
   const [users, setUsers] = useState([]);
   const [deletedUsers, setDeletedUsers] = useState([]);
@@ -119,9 +125,9 @@ function Users() {
             className="rounded-xl border px-4 py-2"
           >
             <option value="">Tất cả vai trò</option>
-            <option value="customer">Customer</option>
-            <option value="admin">Admin</option>
-            <option value="restaurant">Restaurant</option>
+            <option value="customer">Khách hàng</option>
+            <option value="admin">Quản trị viên</option>
+            <option value="restaurant">Nhà hàng</option>
           </select>
           <button
             onClick={() => setShowDeleted(!showDeleted)}
@@ -133,7 +139,7 @@ function Users() {
       </div>
 
       {showDeleted ? (
-        <div className="overflow-x-auto rounded-xl border bg-white">
+        <div className="overflow-x-auto rounded-3xl border bg-white">
           <table className="w-full">
             <thead className="bg-amber-50">
               <tr className="text-left">
@@ -158,7 +164,7 @@ function Users() {
                     <td className="p-4">{user.email}</td>
                     <td className="p-4">
                       <span className={`rounded-full px-3 py-1 text-sm font-semibold ${roleColors[user.role]}`}>
-                        {user.role}
+                        {roleNames[user.role] || user.role}
                       </span>
                     </td>
                     <td className="p-4">{new Date(user.updatedAt).toLocaleDateString("vi-VN")}</td>
@@ -174,7 +180,7 @@ function Users() {
           </table>
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border bg-white">
+        <div className="overflow-x-auto rounded-3xl border bg-white">
           <table className="w-full">
             <thead className="bg-gray-100">
               <tr>
@@ -215,9 +221,9 @@ function Users() {
                         onChange={(e) => handleChangeRole(user._id, e.target.value)}
                         className={`rounded-full border px-3 py-1 text-sm font-semibold ${roleColors[user.role]}`}
                       >
-                        <option value="customer">customer</option>
-                        <option value="admin">admin</option>
-                        <option value="restaurant">restaurant</option>
+                        <option value="customer">Khách hàng</option>
+                        <option value="admin">Quản trị viên</option>
+                        <option value="restaurant">Nhà hàng</option>
                       </select>
                     </td>
                     <td className="p-4">{user.phone || "—"}</td>
@@ -238,7 +244,7 @@ function Users() {
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
-                className="rounded-lg border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
+                className="rounded-xl border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
               >
                 Trước
               </button>
@@ -246,7 +252,7 @@ function Users() {
               <button
                 disabled={page >= totalPages}
                 onClick={() => setPage(page + 1)}
-                className="rounded-lg border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
+                className="rounded-xl border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
               >
                 Sau
               </button>

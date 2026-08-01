@@ -14,14 +14,14 @@ const categories = [
 
 function Category() {
   return (
-    <section className="mx-auto max-w-7xl px-6 py-16">
+    <section className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-16">
       <FadeContent>
-        <div className="mb-10 flex flex-wrap items-end justify-between gap-4">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4 sm:mb-10">
           <div>
             <p className="font-display text-sm font-bold uppercase tracking-widest text-teal">
               Chọn theo sở thích
             </p>
-            <h2 className="mt-2 text-4xl font-bold">
+            <h2 className="mt-2 text-3xl font-bold sm:text-4xl">
               Bé thích gì, <span className="text-coral">có ngay</span> nấy
             </h2>
           </div>
@@ -31,7 +31,7 @@ function Category() {
         </div>
       </FadeContent>
 
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-6">
         {categories.map((item, index) => (
           <FadeContent key={item.name} delay={index * 0.05}>
             <Link

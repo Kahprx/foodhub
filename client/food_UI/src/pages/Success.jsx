@@ -64,7 +64,7 @@ function Success() {
               inline-block
               px-8
               py-4
-              rounded-2xl
+              rounded-3xl
               bg-teal
               hover:bg-teal/90
               text-white
@@ -79,7 +79,7 @@ function Success() {
               inline-block
               px-8
               py-4
-              rounded-2xl
+              rounded-3xl
               bg-coral
               hover:bg-coral/90
               text-white

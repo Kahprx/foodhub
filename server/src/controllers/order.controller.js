@@ -9,6 +9,7 @@ import {
   getRevenueChartService,
   getOrderStatusService,
   getRecentOrdersService,
+  getHourlyOrdersService,
   calculateCouponDiscount,
 } from "../services/order.service.js";
 import Order from "../models/Order.js";
@@ -253,6 +254,21 @@ export const getRecentOrders = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: err.message,
+    });
+  }
+};
+
+export const getHourlyOrders = async (req, res) => {
+  try {
+    const data = await getHourlyOrdersService();
+    return res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

@@ -27,7 +27,7 @@ function Orders() {
 
   useEffect(() => {
     const fetchOrders = async () => {
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
 
       try {
         const response = await api.get("/orders", {
@@ -102,7 +102,7 @@ function Orders() {
                     <strong className="text-lg text-coral">{Number(order.totalPrice || 0).toLocaleString("vi-VN")}đ</strong>
                     <Link
                       to={`/orders/${order._id}`}
-                      className="rounded-xl bg-teal px-4 py-2 text-sm font-bold text-white transition hover:bg-teal/90"
+                      className="rounded-2xl bg-teal px-4 py-2 text-sm font-bold text-white transition hover:bg-teal/90"
                     >
                       Chi tiết
                     </Link>

@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { FaBell } from "react-icons/fa";
+import { FaBell, FaTruck, FaExclamationTriangle } from "react-icons/fa";
 import api from "../../services/api";
+import { getSocket } from "../../services/socket";
 
 function AdminNotifications() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [unread, setUnread] = useState(0);
+  const [flash, setFlash] = useState(null);
   const ref = useRef(null);
+  const flashTimer = useRef(null);
 
   const fetchNotifications = async () => {
     try {
@@ -26,11 +29,53 @@ function AdminNotifications() {
   }, []);
 
   useEffect(() => {
+    const socket = getSocket();
+    socket.emit("join:admin");
+
+    const showFlash = (icon, message) => {
+      setFlash({ icon, message });
+      clearTimeout(flashTimer.current);
+      flashTimer.current = setTimeout(() => setFlash(null), 6000);
+    };
+
+    const onNewOrder = () => {
+      fetchNotifications();
+      showFlash(<FaTruck />, "Có đơn hàng mới! Kiểm tra ngay.");
+    };
+
+    const onStatus = () => {
+      fetchNotifications();
+    };
+
+    const onLowStock = (payload) => {
+      fetchNotifications();
+      showFlash(
+        <FaExclamationTriangle />,
+        `"${payload?.name || "Sản phẩm"}" sắp hết (còn ${payload?.stock})`
+      );
+    };
+
+    socket.on("order:new", onNewOrder);
+    socket.on("order:status", onStatus);
+    socket.on("stock:low", onLowStock);
+
+    return () => {
+      socket.off("order:new", onNewOrder);
+      socket.off("order:status", onStatus);
+      socket.off("stock:low", onLowStock);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       if (ref.current && !ref.current.contains(event.target)) setOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    return () => clearTimeout(flashTimer.current);
   }, []);
 
   const markAllRead = async () => {
@@ -62,8 +107,24 @@ function AdminNotifications() {
         )}
       </button>
 
+      {flash && (
+        <div className="absolute right-0 top-12 z-50 flex w-80 items-center gap-3 rounded-2xl border border-black/5 bg-white p-3 shadow-lift">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-coral/10 text-lg text-coral">
+            {flash.icon}
+          </div>
+          <p className="text-sm font-bold">{flash.message}</p>
+          <button
+            onClick={() => setFlash(null)}
+            className="ml-auto text-gray-400 transition hover:text-ink"
+            aria-label="Đóng"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {open && (
-        <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-2xl border border-black/5 bg-white shadow-lift">
+        <div className="absolute right-0 top-12 z-50 w-80 overflow-hidden rounded-3xl border border-black/5 bg-white shadow-lift">
           <div className="flex items-center justify-between border-b border-black/5 bg-sunny/20 px-5 py-3">
             <h3 className="font-bold">Thông báo</h3>
             {unread > 0 && (

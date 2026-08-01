@@ -118,7 +118,7 @@ function Brands() {
         </button>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white">
+      <div className="overflow-x-auto rounded-3xl border bg-white">
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
@@ -144,9 +144,9 @@ function Brands() {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       {brand.logo ? (
-                        <img src={brand.logo} alt="" className="h-10 w-10 rounded-lg object-cover" />
+                        <img src={brand.logo} alt="" className="h-10 w-10 rounded-2xl object-cover" />
                       ) : (
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-100 text-gray-400">🏷️</div>
+                        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gray-100 text-gray-400">🏷️</div>
                       )}
                       <span className="font-medium">{brand.name}</span>
                     </div>
@@ -194,7 +194,7 @@ function Brands() {
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="w-[520px] rounded-2xl bg-white p-8">
+          <div className="w-[520px] rounded-3xl bg-white p-8">
             <h2 className="mb-6 text-2xl font-bold">{editing ? "Sửa thương hiệu" : "Thêm thương hiệu"}</h2>
 
             <div className="mb-4">
@@ -204,7 +204,7 @@ function Brands() {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                className={`w-full rounded-lg border p-3 ${errors.name ? "border-red-500" : ""}`}
+                className={`w-full rounded-xl border p-3 ${errors.name ? "border-red-500" : ""}`}
               />
               {errors.name && <p className="mt-1 text-sm text-red-500">{errors.name}</p>}
             </div>
@@ -225,7 +225,7 @@ function Brands() {
                 rows={3}
                 value={form.description}
                 onChange={handleChange}
-                className="w-full rounded-lg border p-3"
+                className="w-full rounded-xl border p-3"
               />
             </div>
 
@@ -237,13 +237,13 @@ function Brands() {
             </div>
 
             <div className="flex justify-end gap-3">
-              <button onClick={handleClose} className="rounded-lg border px-5 py-2 font-semibold hover:bg-gray-50">
+              <button onClick={handleClose} className="rounded-xl border px-5 py-2 font-semibold hover:bg-gray-50">
                 Hủy
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="rounded-lg bg-blue-500 px-6 py-2 font-semibold text-white hover:bg-blue-600 disabled:opacity-50"
+                className="rounded-xl bg-blue-500 px-6 py-2 font-semibold text-white hover:bg-blue-600 disabled:opacity-50"
               >
                 {saving ? "Đang lưu..." : editing ? "Cập nhật" : "Lưu"}
               </button>

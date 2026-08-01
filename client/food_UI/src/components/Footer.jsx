@@ -46,7 +46,7 @@ function Footer() {
           <div>
             <h4 className="font-display text-lg font-bold text-sunny">Nhận ưu đãi</h4>
             <p className="mt-4 text-sm text-cream/70">Đăng ký để nhận mã giảm giá mỗi tuần.</p>
-            <form className="mt-4 flex overflow-hidden rounded-2xl border-2 border-cream/40">
+            <form className="mt-4 flex overflow-hidden rounded-3xl border-2 border-cream/40">
               <input type="email" placeholder="Email của bạn" className="w-full bg-transparent px-4 py-3 text-sm outline-none placeholder:text-cream/40" />
               <button type="submit" className="bg-sunny px-5 font-display text-sm font-bold text-ink transition hover:bg-cream">Gửi</button>
             </form>

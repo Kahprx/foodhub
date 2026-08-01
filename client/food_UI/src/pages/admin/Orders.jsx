@@ -22,6 +22,23 @@ const statusOptions = [
   "Cancelled",
 ];
 
+const statusLabels = {
+  Pending: "Chờ xác nhận",
+  Confirmed: "Đã xác nhận",
+  Preparing: "Đang chuẩn bị",
+  Delivering: "Đang giao hàng",
+  Completed: "Hoàn thành",
+  Cancelled: "Đã hủy",
+};
+
+const paymentMethodLabels = {
+  COD: "Thanh toán khi nhận hàng",
+  Banking: "Chuyển khoản",
+  Momo: "MoMo",
+  VNPay: "VNPay",
+  Stripe: "Stripe",
+};
+
 function Orders() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -125,14 +142,14 @@ function Orders() {
           >
             {statusOptions.map((s) => (
               <option key={s || "all"} value={s}>
-                {s ? s : "Tất cả trạng thái"}
+                {s ? statusLabels[s] || s : "Tất cả trạng thái"}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white shadow">
+      <div className="overflow-x-auto rounded-3xl border bg-white shadow">
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr className="text-left">
@@ -191,20 +208,20 @@ function Orders() {
                   </td>
                   <td className="p-4">
                     <span className={`rounded-full px-3 py-1 text-sm font-semibold ${statusColors[order.status] || "bg-gray-100 text-gray-700"}`}>
-                      {order.status}
+                      {statusLabels[order.status] || order.status}
                     </span>
                   </td>
-                  <td className="p-4 text-sm">{order.paymentMethod}</td>
+                  <td className="p-4 text-sm">{paymentMethodLabels[order.paymentMethod] || order.paymentMethod}</td>
                   <td className="p-4 text-sm">{new Date(order.createdAt).toLocaleDateString("vi-VN")}</td>
                   <td className="p-4">
                     <div className="flex items-center gap-2">
                       <select
                         value={order.status}
                         onChange={(e) => handleUpdateStatus(order._id, e.target.value)}
-                        className="rounded-lg border px-2 py-1.5 text-sm"
+                        className="rounded-xl border px-2 py-1.5 text-sm"
                       >
                         {statusOptions.filter(Boolean).map((s) => (
-                          <option key={s} value={s}>{s}</option>
+                          <option key={s} value={s}>{statusLabels[s] || s}</option>
                         ))}
                       </select>
                       <button

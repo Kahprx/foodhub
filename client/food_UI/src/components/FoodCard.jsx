@@ -58,7 +58,7 @@ function FoodCard({ id, name, restaurant, price, image, category = "Toy", rating
           <span className="absolute right-4 top-4 rounded-full bg-gradient-to-r from-sunny to-amber-300 px-3 py-1 font-display text-xs font-bold text-ink shadow-card">{category}</span>
           <div className="absolute inset-x-0 bottom-0 flex translate-y-full items-center justify-center gap-3 bg-ink/75 py-3 font-display font-bold text-white backdrop-blur transition duration-300 group-hover:translate-y-0">
             <button type="button" onClick={(event) => { event.preventDefault(); onQuickView?.(food); }} className="flex items-center gap-2 hover:text-sunny"><FaEye /> Xem nhanh</button>
-            <button type="button" onClick={(event) => { event.preventDefault(); onToggleCompare?.(food); }} className={`rounded-lg px-2 py-1 text-xs ${isComparing ? "bg-sunny text-ink" : "bg-white/20"}`}>{isComparing ? "Đã chọn" : "So sánh"}</button>
+            <button type="button" onClick={(event) => { event.preventDefault(); onToggleCompare?.(food); }} className={`rounded-xl px-2 py-1 text-xs ${isComparing ? "bg-sunny text-ink" : "bg-white/20"}`}>{isComparing ? "Đã chọn" : "So sánh"}</button>
           </div>
         </div>
         <div className="p-6 pb-3">

@@ -180,7 +180,7 @@ function OrderDetail() {
           </div>
 
           {order.shippingProvider && (
-            <div className="mt-8 flex flex-col gap-2 rounded-2xl bg-sunny/20 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-8 flex flex-col gap-2 rounded-3xl bg-sunny/20 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <FaTruck className="text-2xl text-coral" />
                 <div>
@@ -209,7 +209,7 @@ function OrderDetail() {
               <Link
                 key={item._id}
                 to={`/foods/${item.food?._id}`}
-                className="flex items-center gap-4 rounded-2xl border border-gray-100 p-3 transition hover:border-coral/40"
+                className="flex items-center gap-4 rounded-3xl border border-gray-100 p-3 transition hover:border-coral/40"
               >
                 <img
                   src={item.food?.image || "https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=200"}

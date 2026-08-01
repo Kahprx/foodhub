@@ -39,9 +39,9 @@ const fieldLabels = {
   instagramUrl: "Instagram",
   tiktokUrl: "TikTok",
   zaloPhone: "Zalo (SĐT)",
-  metaTitle: "Meta title",
-  metaDescription: "Meta description",
-  ogImage: "OG Image (URL)",
+  metaTitle: "Tiêu đề SEO",
+  metaDescription: "Mô tả SEO",
+  ogImage: "Ảnh OG (URL)",
 };
 
 function Settings() {
@@ -115,7 +115,7 @@ function Settings() {
       return (
         <div key={key} className="rounded-xl border p-4">
           <ImageUploader
-            label="OG Image (upload file hoặc dán URL)"
+            label="Ảnh OG (upload file hoặc dán URL)"
             value={value ?? ""}
             onChange={(url) => handleChange(key, url)}
             folder="settings"
@@ -131,7 +131,7 @@ function Settings() {
           rows={key === "metaDescription" || key === "storeDescription" ? 3 : 1}
           value={value ?? ""}
           onChange={(e) => handleChange(key, e.target.value)}
-          className="w-full resize-none rounded-lg border p-3"
+          className="w-full resize-none rounded-xl border p-3"
         />
       </div>
     );
@@ -158,9 +158,9 @@ function Settings() {
       ) : (
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
           {Object.entries(groupFields).map(([group, keys]) => (
-            <div key={group} className="rounded-2xl border bg-white p-6">
+            <div key={group} className="rounded-3xl border bg-white p-6">
               <h2 className="mb-5 flex items-center gap-2 text-lg font-bold">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                   {group === "general" ? "🏪" : group === "shipping" ? "🚚" : group === "payment" ? "💳" : group === "email" ? "📧" : group === "social" ? "🌐" : "🔍"}
                 </span>
                 {groupTitles[group]}

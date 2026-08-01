@@ -47,7 +47,7 @@ function VerifyEmail() {
             <p className="mt-3 text-ink/60">Email của bạn đã được xác thực.</p>
             <Link
               to="/login"
-              className="mt-6 inline-block rounded-2xl bg-teal px-8 py-3 font-display font-bold text-white shadow-chunky transition hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-chunky-sm"
+              className="mt-6 inline-block rounded-3xl bg-teal px-8 py-3 font-display font-bold text-white shadow-chunky transition hover:translate-x-[3px] hover:translate-y-[3px] hover:shadow-chunky-sm"
             >
               Đăng nhập
             </Link>

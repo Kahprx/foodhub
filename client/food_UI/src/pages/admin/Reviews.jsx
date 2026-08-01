@@ -108,7 +108,7 @@ function Reviews() {
         </div>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border bg-white">
+      <div className="overflow-x-auto rounded-3xl border bg-white">
         <table className="w-full">
           <thead className="bg-gray-100">
             <tr>
@@ -149,7 +149,7 @@ function Reviews() {
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       {review.food?.image && (
-                        <img src={review.food.image} alt="" className="h-9 w-9 rounded-lg object-cover" />
+                        <img src={review.food.image} alt="" className="h-9 w-9 rounded-2xl object-cover" />
                       )}
                       <span className="max-w-[150px] truncate text-sm">{review.food?.name || "Đã xóa"}</span>
                     </div>
@@ -197,7 +197,7 @@ function Reviews() {
             <button
               disabled={page <= 1}
               onClick={() => setPage(page - 1)}
-              className="rounded-lg border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
+              className="rounded-xl border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
             >
               Trước
             </button>
@@ -205,7 +205,7 @@ function Reviews() {
             <button
               disabled={page >= totalPages}
               onClick={() => setPage(page + 1)}
-              className="rounded-lg border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
+              className="rounded-xl border px-4 py-2 disabled:opacity-50 hover:bg-gray-50"
             >
               Sau
             </button>

@@ -1,0 +1,20 @@
+name: keep-awake
+
+on:
+  schedule:
+    # Chạy mỗi 5 phút để giữ backend + client Railway không ngủ (free plan)
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping client + backend qua proxy
+        run: |
+          curl -sS -o /dev/null -w "client %{http_code} in %{time_total}s\n" \
+            https://foodhub-client-production.up.railway.app/
+          curl -sS -o /dev/null -w "backend %{http_code} in %{time_total}s\n" \
+            https://foodhub-client-production.up.railway.app/api/v1/health
+        # Không fail workflow nếu 1 lần ping lỗi (lần chạy sau sẽ tự thử lại)
+        continue-on-error: true

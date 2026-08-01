@@ -3,6 +3,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../context/CartContext";
 import api from "../services/api";
+import { PAYMENT_METHODS, PAYMENT_STORAGE_KEY } from "../constants/payment";
 import {
   FaTrashAlt,
   FaMoneyBillWave,
@@ -27,6 +28,7 @@ function Cart() {
   });
   const [couponError, setCouponError] = useState("");
   const [checkingCoupon, setCheckingCoupon] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem(PAYMENT_STORAGE_KEY) || "COD");
 
   const updateAppliedCoupon = (coupon) => {
     setAppliedCoupon(coupon);
@@ -361,6 +363,31 @@ function Cart() {
                 </button>
               </div>
             )}
+
+            <div>
+              <p className="mb-3 text-sm font-semibold text-gray-600">
+                Phương thức thanh toán
+              </p>
+              <div className="grid grid-cols-2 gap-2">
+                {PAYMENT_METHODS.map((method) => (
+                  <button
+                    key={method.id}
+                    onClick={() => {
+                      setPaymentMethod(method.id);
+                      localStorage.setItem(PAYMENT_STORAGE_KEY, method.id);
+                    }}
+                    className={`flex items-center gap-2 rounded-xl border-2 px-3 py-2.5 text-left text-sm font-semibold transition ${
+                      paymentMethod === method.id
+                        ? "border-coral bg-coral/5 text-coral"
+                        : "border-gray-100 text-gray-700 hover:border-coral/40"
+                    }`}
+                  >
+                    <span className="text-lg">{method.icon}</span>
+                    <span className="truncate">{method.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
 
             <div className="flex justify-between">
 

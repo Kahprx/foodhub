@@ -4,18 +4,12 @@ import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import CurvedInput from "../components/bits/CurvedInput";
 import SpecularButton from "../components/bits/SpecularButton";
+import { PAYMENT_METHODS, PAYMENT_STORAGE_KEY } from "../constants/payment";
 
 const shippingProviders = [
   { id: "SPX", label: "SPX Express", eta: "1 - 3 ngày", fee: 20000 },
   { id: "GHN", label: "Giao Hàng Nhanh", eta: "1 - 2 ngày", fee: 25000 },
   { id: "ViettelPost", label: "Viettel Post", eta: "2 - 4 ngày", fee: 18000 },
-];
-
-const paymentMethods = [
-  { id: "COD", label: "Thanh toán khi nhận hàng (COD)", icon: "💵" },
-  { id: "VNPay", label: "VNPay", icon: "🏦" },
-  { id: "Momo", label: "MoMo", icon: "📱" },
-  { id: "Stripe", label: "Stripe (Thẻ quốc tế)", icon: "💳" },
 ];
 
 function Checkout() {
@@ -31,7 +25,7 @@ function Checkout() {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderError, setOrderError] = useState("");
   const [shippingProvider, setShippingProvider] = useState("SPX");
-  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [paymentMethod, setPaymentMethod] = useState(() => localStorage.getItem(PAYMENT_STORAGE_KEY) || "COD");
   const [savedAddresses, setSavedAddresses] = useState([]);
   const [coupon, setCoupon] = useState(() => {
     const saved = localStorage.getItem("foodhub-coupon");
@@ -213,11 +207,14 @@ function Checkout() {
           <div className="rounded-3xl bg-white p-8 shadow-card ring-1 ring-black/5">
             <h2 className="font-display mb-6 text-2xl font-bold">Phương thức thanh toán</h2>
             <div className="grid gap-3 sm:grid-cols-2">
-              {paymentMethods.map((method) => (
+              {PAYMENT_METHODS.map((method) => (
                 <button
                   key={method.id}
                   type="button"
-                  onClick={() => setPaymentMethod(method.id)}
+                  onClick={() => {
+                    setPaymentMethod(method.id);
+                    localStorage.setItem(PAYMENT_STORAGE_KEY, method.id);
+                  }}
                   className={`flex items-center gap-3 rounded-2xl border-2 p-4 text-left transition ${
                     paymentMethod === method.id
                       ? "border-coral bg-coral/5"

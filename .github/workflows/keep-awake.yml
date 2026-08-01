@@ -4,6 +4,8 @@ on:
   schedule:
     # Chạy mỗi 5 phút để giữ backend + client Railway không ngủ (free plan)
     - cron: "*/5 * * * *"
+  push:
+    branches: [main]
   workflow_dispatch:
 
 jobs:

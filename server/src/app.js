@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import rateLimit from "express-rate-limit";
 
 import routes from "./routes/index.js";
@@ -13,6 +14,9 @@ const app = express();
 
 // Security
 app.use(helmet());
+
+// Compression
+app.use(compression());
 
 // Rate limiting
 const apiLimiter = rateLimit({

@@ -83,6 +83,13 @@ const foodSchema = new mongoose.Schema(
   }
 );
 
+foodSchema.index({ category: 1, createdAt: -1 });
+foodSchema.index({ isAvailable: 1, isFeatured: 1, createdAt: -1 });
+foodSchema.index({ restaurant: 1 });
+foodSchema.index({ soldCount: -1 });
+foodSchema.index({ rating: -1 });
+foodSchema.index({ brand: 1 });
+
 const Food = mongoose.model("Food", foodSchema);
 
 export default Food;

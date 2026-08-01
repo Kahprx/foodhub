@@ -1,22 +1,24 @@
-name: keep-awake
+name: smoke-test
 
 on:
-  schedule:
-    # Chạy mỗi 5 phút để giữ backend + client Railway không ngủ (free plan)
-    - cron: "*/5 * * * *"
+  # Kiểm tra production sau mỗi lần push và chạy định kỳ hằng ngày.
+  # Lưu ý: services không ngủ (Serverless/App-Sleeping tắt) nên không cần keep-alive.
+  # Workflow này chỉ đóng vai trò "uptime check" + kiểm tra nhanh sau mỗi deploy.
   push:
     branches: [main]
+  schedule:
+    - cron: "17 4 * * *"
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping client + backend qua proxy
+      - name: Ping client
         run: |
           curl -sS -o /dev/null -w "client %{http_code} in %{time_total}s\n" \
             https://foodhub-client-production.up.railway.app/
+      - name: Ping backend (qua proxy client)
+        run: |
           curl -sS -o /dev/null -w "backend %{http_code} in %{time_total}s\n" \
             https://foodhub-client-production.up.railway.app/api/v1/health
-        # Không fail workflow nếu 1 lần ping lỗi (lần chạy sau sẽ tự thử lại)
-        continue-on-error: true

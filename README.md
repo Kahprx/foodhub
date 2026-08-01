@@ -90,7 +90,53 @@ See `server/.env.example`. Key groups:
 - `MOMO_PARTNER_CODE` / `MOMO_ACCESS_KEY` / `MOMO_SECRET_KEY` — MoMo
 - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` — Stripe (falls back to graceful error if unset)
 
-## Deploy on Railway
+## Production (Railway — deployed & verified)
+
+Current live stack (project `marvelous-creation`, env `production`):
+
+| Resource | URL |
+|----------|-----|
+| Client (SPA + proxy) | https://foodhub-client-production.up.railway.app |
+| Backend API (direct) | https://marvelous-creation-production-5d43.up.railway.app |
+| API health | https://foodhub-client-production.up.railway.app/api/v1/health |
+| Swagger docs | https://marvelous-creation-production-5d43.up.railway.app/api-docs |
+
+**Cold start:** none. `Serverless`/App-Sleeping is disabled on all services (`sleepApplication = false`),
+so services run continuously. The backend also keeps an active MongoDB connection, which prevents
+sleep even if Serverless were enabled. No keep-alive pinger is required.
+
+**Verified end-to-end (2026-08-01):** admin + customer login, food list, add-to-cart/get-cart
+(stock/isAvailable/discountPrice fields), forgot-password returns a `resetLink` on the client URL.
+
+### ⚠️ Billing / handover note
+
+- Workspace is on the **Trial plan with a one-time $5 credit (19 days left as of 2026-08-01)**.
+  When the trial ends, deployments stop unless you upgrade.
+- Current usage ≈ **$0.64 / 12 days (~$1.6/month)** across client + backend + MongoDB.
+- After the trial: **Hobby ($5/month)** comfortably covers this, or migrate to a fully-free host
+  (e.g. Cloudflare Pages for the static client + a Cloudflare Worker / Oracle free VM for the API).
+- Optional (free) alerting: add 2 UptimeRobot monitors (HTTP(s), 5 min) — not needed for keep-alive,
+  only if you want down-notifications.
+
+### Environment variables (currently set on Railway backend)
+
+`MONGODB_URI` (Railway MongoDB, internal), `JWT_SECRET`, `JWT_REFRESH_SECRET`, `JWT_EXPIRES_IN=7d`,
+`CLIENT_URL=https://foodhub-client-production.up.railway.app`, `SMTP_HOST/PORT/SECURE/USER/PASS` (Gmail —
+SMTP is unreachable from Railway, so forgot-password safely falls back to returning the reset link).
+
+Client service env: `BACKEND_URL=https://marvelous-creation-production-5d43.up.railway.app`.
+
+### Redeploy after code change
+
+```bash
+railway up server --path-as-root -s marvelous-creation -e production
+railway up client/food_UI --path-as-root -s foodhub-client -e production
+```
+
+`.github/workflows/smoke-test.yml` pings client + backend on every push and daily, so a broken
+deploy shows a red check on the latest commit.
+
+## Deploy on Railway (from scratch)
 
 Two services, one repo:
 

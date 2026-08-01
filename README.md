@@ -90,7 +90,14 @@ See `server/.env.example`. Key groups:
 - `MOMO_PARTNER_CODE` / `MOMO_ACCESS_KEY` / `MOMO_SECRET_KEY` — MoMo
 - `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` — Stripe (falls back to graceful error if unset)
 
-## Production (Railway — deployed & verified)
+## Production
+
+> **Migrating to a fully-free host.** The current Railway deployment works (below) but is on a
+> **trial that expires** and will then stop unless paid. Migration target: **Oracle Cloud
+> Always-Free ARM VM** — see [`deploy/oracle/README.md`](deploy/oracle/README.md) for the step-by-step
+> guide + one-command `setup.sh`. Until the VM is live, Railway keeps serving the site.
+
+### Current stack (Railway — deployed & verified)
 
 Current live stack (project `marvelous-creation`, env `production`):
 
